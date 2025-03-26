@@ -7,8 +7,8 @@ import Loading from '../../Components/Loading';
 import MainImage from'../../Assets/Images/MainImage.png'
 import { usePost } from '../../Hooks/usePostJson';
 import {useGet} from '../../Hooks/useGet';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import axios from 'axios';

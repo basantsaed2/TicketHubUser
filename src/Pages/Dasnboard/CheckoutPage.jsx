@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
 import { usePost } from "../../Hooks/usePostJson";
 import { useGet } from "../../Hooks/useGet";
 import { FaWallet, FaCreditCard, FaPaypal } from "react-icons/fa";
