@@ -7,14 +7,14 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-} from "@/components/ui/tabs";
+} from "@/Components/ui/tabs";
 import {
   Select,
   SelectTrigger,
   SelectValue,
   SelectContent,
   SelectItem,
-} from "@/components/ui/select";
+} from "@/Components/ui/select";
 import { Input } from "@/Components/ui/input";
 import { Button } from '@/Components/ui/button';
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
