@@ -6,8 +6,8 @@ import { useAuth } from '../../Context/Auth';
 import Loading from '../../Components/Loading';
 import MainImage from'../../Assets/Images/MainImage.png'
 import { usePost } from '../../Hooks/usePostJson';
-import { Input } from "@/components/ui/Input";
-import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import axios from 'axios';
 const LoginPage = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
