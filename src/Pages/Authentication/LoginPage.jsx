@@ -187,7 +187,7 @@ import MainImage from '../../Assets/Images/MainImage.png';
 import { usePost } from '../../Hooks/usePostJson';
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/Components/ui/dialog";
 
 const LoginPage = () => {
     const apiUrl = import.meta.env.VITE_API_BASE_URL;
