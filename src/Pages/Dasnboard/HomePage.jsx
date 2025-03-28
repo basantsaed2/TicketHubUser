@@ -104,40 +104,6 @@ const TravelBooking = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!auth.user) {
-      auth.toastError('You must be logged in to continue.')
-      navigate('auth/login', { replace: true })
-      return;
-    }
-    else
-      {
-      // if (!travelDate) {
-      //   auth.toastError('Please enter the travel date.');
-      //   return;
-      // }
-      // if (filterMode === "general" && (!selectedFromCity || !selectedToCity)) {
-      //   auth.toastError('Please select both departure and arrival locations.');
-      //   return;
-      // }
-      // if (filterMode === "private") {
-      //   if (!selectedCity) {
-      //     auth.toastError('Please select the city.');
-      //     return;
-      //   }
-      //   if (!address) {
-      //     auth.toastError('Please enter the address.');
-      //     return;
-      //   }
-      //   if (!selectedCar) {
-      //     auth.toastError('Please select the car type.');
-      //     return;
-      //   }
-      //   if (!mapLocation[0] && !mapLocation[1]) {
-      //     auth.toastError('Please select the pickup location on the map.');
-      //     return;
-      //   }
-      // }
-
       const formData = {
         from: selectedFromCity,
         to: selectedToCity,
@@ -161,8 +127,8 @@ const TravelBooking = () => {
         if (response.status === 200 || response.status === 201) {
           setModalVisible(true);
         }}
-      }
-  };
+
+      };
 
   return (
     <div className="relative w-full pb-32 md:mb-20 mb-40">

@@ -5,7 +5,7 @@ const StaticLoader = () => {
        return (
               <>
                      <div className='w-full h-full flex justify-center items-center'>
-                            <DotLoader color='#0D47A1' size={60} />
+                            <DotLoader color='#F58220' size={60} />
                      </div>
               </>
        )

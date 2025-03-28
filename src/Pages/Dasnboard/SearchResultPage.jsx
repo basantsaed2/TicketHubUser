@@ -10,6 +10,8 @@ import {
   FaMoneyBillWave,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from '../../Context/Auth';
+
 // Helper function to calculate the time difference (assuming times are in "HH:MM:SS" format)
 const getTimeDifference = (startTime, endTime) => {
   if (!startTime || !endTime) return "";
@@ -59,6 +61,7 @@ const TripCard = ({ trip }) => {
 
   const amenities = trip.bus?.aminity || [];
   const navigate = useNavigate();
+  const auth = useAuth();
 
   return (
     <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-shadow duration-200">
@@ -125,10 +128,17 @@ const TripCard = ({ trip }) => {
         <span className="text-gray-600">{trip.trip_type} number :{trip.bus?.bus_number} </span>
         </div>
         <button
-            onClick={() => navigate("/checkout", { state: { trip } })}
-            className="w-full bg-mainColor hover:bg-mainColor/90 text-white font-semibold px-4 py-2 rounded"
-            >
-            Select
+          onClick={() => {
+            if (!auth.user) {
+              auth.toastError('You must be logged in to continue.');
+              navigate('/auth/login', { replace: true });
+              return;
+            }
+            navigate('/checkout', { state: { trip } });
+          }}
+          className="w-full bg-mainColor hover:bg-mainColor/90 text-white font-semibold px-4 py-2 rounded"
+        >
+          Select
         </button>
       </div>
     </div>

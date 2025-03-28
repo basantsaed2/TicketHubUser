@@ -5,12 +5,14 @@ import { Button } from "@/Components/ui/button";
 import { usePost } from "../../Hooks/usePostJson";
 import { useGet } from "../../Hooks/useGet";
 import { FaWallet, FaCreditCard, FaPaypal } from "react-icons/fa";
+import { useAuth } from '../../Context/Auth';
 
 const CheckoutPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   // Expecting state: { trip: selectedTrip }
   const { trip } = state || {};
+  const auth = useAuth();
 
   // Base API URL
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -81,20 +83,20 @@ const CheckoutPage = () => {
     formData.append("amount", trip.price);
     formData.append("travel_date", travelDate);
     formData.append("receipt_image", receiptImage);
-    let res;
     if (selectedPaymentMethod === "wallet") {
-      res = await postPaymentWallet(formData);
+      postPaymentWallet(formData ,"Payment submitted successfully!");
     } else {
       formData.append("payment_method_id", selectedPaymentMethod);
-      res = await postPayment(formData);
+     postPayment(formData,"Payment submitted successfully!");
     }
-    if (res && (res.status === 200 || res.status === 201)) {
-        setModalVisible(true);
-      auth.toastSucess("Payment submitted successfully!");
-      navigate(-1);
-    } else {
-    }auth.toastError('Payment submission failed. Please try again.')
   };
+
+  useEffect(() => {
+    if (!loadingPost && response) {
+      setModalVisible(true);
+      // navigate(-1); 
+       }
+  }, [loadingPost, response, navigate]);
 
   if (!trip) {
     return (
@@ -229,7 +231,7 @@ const CheckoutPage = () => {
             <Button
               onClick={() => {
                 setModalVisible(false);
-                navigate("/confirmation");
+                navigate(-1);
               }}
               className="bg-mainColor hover:bg-mainColor/90 text-white font-semibold py-2 rounded w-full"
             >
