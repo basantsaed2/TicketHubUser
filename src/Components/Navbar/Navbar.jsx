@@ -35,9 +35,14 @@ const Navbar = () => {
                                                  <span className='text-3xl text-secoundColor font-TextFontRegular'>Ticket Hub</span>
                                           </Link>
                                    </div>
+                                   {
+                                   user && (
                                    <div className='sm:hidden lg:flex w-5/12 items-center'>
                                           <Links />
                                    </div>
+                                   )
+                                   }
+                                  
                                    <div className='sm:hidden xl:flex w-3/12 items-center justify-end gap-x-4'>
 
                                           {user ? (
@@ -82,6 +87,7 @@ const Navbar = () => {
                                           className={`w-full absolute ${toggleOpen ? 'top-16' : '-top-[400px]'
                                                  } transition-all duration-300 left-0 bg-white shadow-md sm:flex xl:hidden flex-col items-center justify-center px-4 pb-3 rounded-br-3xl rounded-bl-3xl z-20`}
                                    >
+                                          {user && (
                                           <div className='w-full flex flex-col'>
                                                  <Link
                                                         to={'/'}
@@ -112,6 +118,7 @@ const Navbar = () => {
                                                        Points
                                                  </Link>
                                           </div>
+                                          )}
                                           <div className='flex flex-col w-full items-center justify-center gap-y-2'>
                                                  {user ? (
 

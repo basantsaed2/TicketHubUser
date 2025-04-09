@@ -127,16 +127,14 @@ const WalletPage = () => {
   
       {/* Show Content Based on Active Tab */}
       {activeTab === "current" ? (
-        <div className="bg-gray-100 shadow-lg rounded-lg p-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 p-4 gap-4">
           {wallets.map((wallet) => (
-            <div key={wallet.id} className="flex justify-between items-center border-b py-3">
-              <div>
-                <p className="text-md font-semibold">{wallet.currency.name}</p>
-                <p className="text-gray-500">Balance: {wallet.currency.symbol}{wallet.amount}</p>
+            <div key={wallet.id} className="flex flex-col gap-5 border border-mainColor p-4 rounded-lg shadow-md">
+                <p className="text-md font-semibold">Currancy : {wallet.currency?.name} {`(${wallet.currency?.symbol})`}</p>
+                <p className="text-gray-500">Balance: <span className="text-black text-xl font-semibold">{wallet.amount} {wallet.currency.symbol}</span></p>
                 {/* <p className="text-gray-500">Total: {wallet.total !== null ? wallet.currency.symbol + wallet.total : "N/A"}</p> */}
                 {/* <p className="text-gray-500">Pending: {wallet.pending_amount !== null ? wallet.currency.symbol + wallet.pending_amount : "N/A"}</p> */}
-              </div>
-              <button className="bg-orange-500 text-white px-3 py-1 rounded-md" onClick={() => openRechargeModal(wallet)}>Recharge</button>
+              <button className="bg-orange-500 text-white px-3 py-2 rounded-md" onClick={() => openRechargeModal(wallet)}>Recharge</button>
             </div>
           ))}
         </div>
@@ -174,16 +172,20 @@ const WalletPage = () => {
 
         {/* Currency Selection */}
         <select
-          value={selectedCurrency}
+          value={selectedCurrency || selectedWallet?.currency?.id} 
           onChange={(e) => setSelectedCurrency(e.target.value)}
           className="w-full p-2 border rounded"
         >
           <option value="">Select Currency</option>
-          {currencies.map((currency) => (
-            <option key={currency.id} value={currency.id}>
-              {currency.name} ({currency.symbol})
-            </option>
-          ))}
+
+          {/* Optionally, show other currencies */}
+          {currencies
+            .filter((currency) => currency.id === selectedWallet?.currency_id) 
+            .map((currency) => (
+              <option key={currency.id} value={currency.id}>
+                {currency.name} ({currency.symbol})
+              </option>
+            ))}
         </select>
 
         {/* Payment Method Selection */}

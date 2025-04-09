@@ -20,7 +20,7 @@ const App = () => {
   return (
     <div
       ref={scrollContainerRef}
-      className='relative w-full bg-white flex flex-col items-center justify-between h-screen overflow-y-scroll overflow-x-hidden'>
+      className='relative w-full bg-white flex flex-col items-center justify-between h-screen custom-scrollbar overflow-y-auto overflow-x-hidden'>
       <div className="sticky top-0 w-full z-30">
         <Navbar />
       </div>

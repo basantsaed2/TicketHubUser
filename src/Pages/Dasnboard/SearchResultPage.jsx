@@ -42,8 +42,8 @@ const getServiceIcon = (tripType) => {
 
 const TripCard = ({ trip }) => {
   const busImage =
-    trip.bus && trip.bus.bus_image
-      ? `${trip.bus.image_link}/${trip.bus.bus_image}`
+    trip.bus && trip.bus.image_link
+      ? `${trip.bus.image_link}`
       : "https://via.placeholder.com/150x100?text=No+Image";
 
   // Use default values if rating or reviews are missing
