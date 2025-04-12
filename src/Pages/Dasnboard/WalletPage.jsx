@@ -146,7 +146,7 @@ const WalletPage = () => {
             walletHistory.map((history, index) => (
               <div key={index} className="border-b py-3">
                 <p className="text-md font-semibold">{history.currency?.name}</p>
-                <p className="text-gray-500">Amount: {history.currency?.symbol}{history.amount}</p>
+                <p className="text-gray-500">Amount: {history.amount}{history.currency?.symbol}</p>
                 <p className="text-gray-500">Status: {history.status}</p>
                 <p className="text-gray-500">Date: {new Date(history.created_at).toLocaleString()}</p>
               </div>

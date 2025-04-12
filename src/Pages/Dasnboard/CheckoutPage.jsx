@@ -137,208 +137,131 @@ const CheckoutPage = () => {
     <div className="min-h-screen bg-gray-50 p-6 space-y-8">
       <h1 className="text-3xl font-bold text-center">Checkout</h1>
 
-{/* Trip Details Section */}
-{/* <div className="bg-white rounded-xl shadow-xl p-6">
-  <div className="flex flex-col md:flex-row items-center gap-6">
-    <div className="w-full md:w-48 h-32 flex-shrink-0">
-      <img
-        src={
-          trip.bus && trip.bus.bus_image
-            ? `${trip.bus.image_link}`
-            : "https://via.placeholder.com/150x100?text=No+Image"
-        }
-        alt="Trip"
-        className="w-full h-full object-cover rounded-lg"
-      />
-    </div>
-    <div className="flex-1">
-      <h2 className="text-2xl font-bold">{trip.trip_name}</h2>
-      <p className="text-gray-600 mt-1">
-        {trip.pickup_station?.name} → {trip.dropoff_station?.name}
-      </p>
-      <p className="text-gray-600 mt-1">Departure: {trip.deputre_time}</p>
-      <p className="text-gray-600 mt-1">Arrival: {trip.arrival_time}</p>
-      <p className="text-orange-500 font-bold mt-3">
-        Price: ${trip.price} / Person
-      </p>
-    </div>
-  </div>
-</div> */}
+        <div className="w-full p-4">
 
-{/* Payment Section */}
-{/* <div className="bg-white rounded-xl shadow-xl p-6 flex flex-col lg:flex-row gap-6">
-  <div className="flex-1">
-    <h2 className="text-2xl text-secoundColor font-bold mb-4">Payment Methods</h2>
-    <div className="flex flex-col gap-4">
-      {paymentMethods.map((method) => (
-        <label
-          key={method.id}
-          className={`flex items-center gap-4 p-4 border rounded-lg cursor-pointer transition-colors ${
-            selectedPaymentMethod === method.id
-              ? "border-mainColor bg-mainColor/10"
-              : "border-gray-300"
-          }`}
-        >
-          <input
-            type="radio"
-            name="paymentMethod"
-            value={method.id}
-            checked={selectedPaymentMethod === method.id}
-            onChange={() => setSelectedPaymentMethod(method.id)}
-            className="form-radio h-5 w-5 accent-mainColor"
-          />
-          <img
-            src={method.image}
-            alt={method.name}
-            className="w-12 h-12 object-cover rounded-full"
-          />
-          <span className="font-semibold text-lg">{method.name}</span>
-        </label>
-      ))}
-    </div>
-  </div>
-
-  <div className="flex-1">
-      <form onSubmit={handlePaymentSubmit} className="bg-white rounded-xl shadow-lg p-4 space-y-4">
-         <select
-        value={travelers}
-        onChange={handleTravelersChange}
-        className="border border-gray-300 rounded px-2 py-1 text-sm text-gray-600"
-      >
-        <option disabled value="">Number Of Travelers</option>
-        {[...Array(trip.available_seats).keys()].map((i) => (
-          <option key={i} value={i + 1}>{i + 1}</option>
-        ))}
-      </select>
-      </form>
-  </div>
-</div> */}
-
-<div className="w-full p-4">
-
-  {/* Top Section: Trip Info & Payment Methods */}
-  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-    {/* Trip Info Card */}
-    <div className="bg-[#14142B] text-white rounded-lg p-4 text-sm space-y-3">
-      <p className="font-semibold text-white text-2xl">Trip Info</p>
-      <p className="font-medium text-lg">📍 Route: {trip.pickup_station?.name} → {trip.dropoff_station?.name}</p>
-      <p className="text-lg">🎫 Trip Number: {trip.trip_number || "55841"}</p>
-      <p className="text-lg">🕒 Departure: {trip.deputre_time}</p>
-      <p className="text-lg">🕘 Arrival: {trip.arrival_time}</p>
-      <p className="text-orange-400 font-semibold text-lg pt-3  border-t-2">💵 Price: ${trip.price} / Person</p>
-    </div>
-
-    {/* Payment Methods */}
-    <div className="bg-[#F2F2F6] rounded-lg p-4 text-sm">
-    <h3 className="text-xl font-semibold text-secoundColor mb-1">Payment Merthods</h3>
-    <div className="flex flex-col gap-2">
-        {paymentMethods.map((method) => (
-          <label
-            key={method.id}
-            className={`flex items-center justify-between p-2 border rounded-lg cursor-pointer ${
-              selectedPaymentMethod === method.id
-                ? "border-orange-500 bg-orange-100"
-                : "bg-white"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-            <input
-                type="radio"
-                name="paymentMethod"
-                value={method.id}
-                checked={selectedPaymentMethod === method.id}
-                onChange={() => setSelectedPaymentMethod(method.id)}
-                className={`h-5 w-5 rounded-full appearance-none border-2 ${
-                  selectedPaymentMethod === method.id
-                    ? "border-orange-500 bg-orange-500"
-                    : "border-gray-300 bg-white"
-                }`}         />
-              <span className="text-lg">{method.name}</span>
+          {/* Top Section: Trip Info & Payment Methods */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            {/* Trip Info Card */}
+            <div className="bg-[#14142B] text-white rounded-lg p-4 text-sm space-y-3">
+              <p className="font-semibold text-white text-2xl">Trip Info</p>
+              <p className="font-medium text-lg">📍 Route: {trip.pickup_station?.name} → {trip.dropoff_station?.name}</p>
+              <p className="text-lg">🎫 Trip Number: {trip.trip_number || "55841"}</p>
+              <p className="text-lg">🕒 Departure: {trip.deputre_time}</p>
+              <p className="text-lg">🕘 Arrival: {trip.arrival_time}</p>
+              <p className="text-orange-400 font-semibold text-lg pt-3  border-t-2">💵 Price: ${trip.price} / Person</p>
             </div>
-            <img src={method.image} alt={method.name} className="w-5 h-5 object-contain" />
-          </label>
-        ))}
-      </div>
-    </div>
-  </div>
 
-  {/* Compact Form Section */}
-  <form onSubmit={handlePaymentSubmit} className="bg-white border border-gray-300 rounded-lg p-4 text-sm space-y-4">
-  <h3 className="text-xl font-semibold text-secoundColor border-b pb-2">Payment Details</h3>
+            {/* Payment Methods */}
+            <div className="bg-[#F2F2F6] rounded-lg p-4 text-sm">
+            <h3 className="text-xl font-semibold text-secoundColor mb-1">Payment Merthods</h3>
+            <div className="flex flex-col gap-2">
+                {paymentMethods.map((method) => (
+                  <label
+                    key={method.id}
+                    className={`flex items-center justify-between p-2 border rounded-lg cursor-pointer ${
+                      selectedPaymentMethod === method.id
+                        ? "border-orange-500 bg-orange-100"
+                        : "bg-white"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                    <input
+                        type="radio"
+                        name="paymentMethod"
+                        value={method.id}
+                        checked={selectedPaymentMethod === method.id}
+                        onChange={() => setSelectedPaymentMethod(method.id)}
+                        className={`h-5 w-5 rounded-full appearance-none border-2 ${
+                          selectedPaymentMethod === method.id
+                            ? "border-orange-500 bg-orange-500"
+                            : "border-gray-300 bg-white"
+                        }`}         />
+                      <span className="text-lg">{method.name}</span>
+                    </div>
+                    <img src={method.image} alt={method.name} className="w-5 h-5 object-contain" />
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-    <div className="flex flex-col">
-      <label className="text-gray-700 text-sm font-medium mb-1">Travel Date</label>
-      <Input
-        type="date"
-        value={travelDate}
-        min={today}
-        className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-      />
-    </div>
+          {/* Compact Form Section */}
+          <form onSubmit={handlePaymentSubmit} className="bg-white border border-gray-300 rounded-lg p-4 text-sm space-y-4">
+          <h3 className="text-xl font-semibold text-secoundColor border-b pb-2">Payment Details</h3>
 
-    <div className="flex flex-col">
-      <label className="text-gray-700 text-sm font-medium mb-1">Number of Travelers</label>
-      <Input
-        type="number"
-        value={travelers}
-        onChange={handleTravelersChange}
-        min="1"
-        max={trip.available_seats}
-        className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-      />
-    </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {/* <div className="flex flex-col">
+              <label className="text-gray-700 text-sm font-medium mb-1">Travel Date</label>
+              <Input
+                type="date"
+                value={travelDate}
+                min={today}
+                className="w-full border border-mainColor rounded-md focus:ring-mainColor"
+              />
+            </div> */}
 
-    <div className="flex flex-col">
-      <label className="text-gray-700 text-sm font-medium mb-1">Receipt Image</label>
-      <Input
-        type="file"
-        onChange={handleReceiptChange}
-        className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-      />
-    </div>
-  </div>
+            <div className="flex flex-col">
+              <label className="text-gray-700 text-sm font-medium mb-1">Number of Travelers</label>
+              <Input
+                type="number"
+                value={travelers}
+                onChange={handleTravelersChange}
+                min="1"
+                max={trip.available_seats}
+                className="w-full border border-mainColor rounded-md focus:ring-mainColor"
+              />
+            </div>
 
-  {travelerDetails.map((traveler, index) => (
-    <div
-      key={index}
-      className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 rounded-md p-2 bg-gray-50 mt-2"
-    >
-      <div className="flex flex-col">
-        <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Name</label>
-        <Input
-          type="text"
-          value={traveler.name}
-          onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
-          className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-          placeholder="Enter name"
-        />
-      </div>
+            <div className="flex flex-col">
+              <label className="text-gray-700 text-sm font-medium mb-1">Receipt Image</label>
+              <Input
+                type="file"
+                onChange={handleReceiptChange}
+                className="w-full border border-mainColor rounded-md focus:ring-mainColor"
+              />
+            </div>
+          </div>
 
-      <div className="flex flex-col">
-        <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Age</label>
-        <Input
-          type="number"
-          value={traveler.age}
-          onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
-          min="0"
-          className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-          placeholder="Enter age"
-        />
-      </div>
-    </div>
-    ))}
-  <div className="w-full flex items-center justify-center">
-    <Button
-      type="submit"
-      className="text-lg  bg-mainColor border border-mainColor hover:bg-mainColor/90 text-white font-semibold py-6 rounded-md mt-4"
-    >
-      Confirm Payment
-    </Button>
-    </div>
-  </form>
+          {travelerDetails.map((traveler, index) => (
+            <div
+              key={index}
+              className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 rounded-md p-2 bg-gray-50 mt-2"
+            >
+              <div className="flex flex-col">
+                <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Name</label>
+                <Input
+                  type="text"
+                  value={traveler.name}
+                  onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
+                  className="w-full border border-mainColor rounded-md focus:ring-mainColor"
+                  placeholder="Enter name"
+                />
+              </div>
 
-</div>
+              <div className="flex flex-col">
+                <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Age</label>
+                <Input
+                  type="number"
+                  value={traveler.age}
+                  onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
+                  min="0"
+                  className="w-full border border-mainColor rounded-md focus:ring-mainColor"
+                  placeholder="Enter age"
+                />
+              </div>
+            </div>
+            ))}
+          <div className="w-full flex items-center justify-center">
+            <Button
+              type="submit"
+              className="text-lg  bg-mainColor border border-mainColor hover:bg-mainColor/90 text-white font-semibold py-6 rounded-md mt-4"
+            >
+              Confirm Payment
+            </Button>
+            </div>
+          </form>
+
+        </div>
 
 
 

@@ -47,10 +47,16 @@ const TravelBooking = () => {
   const [selectedToCity, setSelectedToCity] = useState("");
 
   // Main filters state
-  const [travelDate, setTravelDate] = useState("");
+  const today = new Date().toISOString().split("T")[0];
+
+  const [travelDate, setTravelDate] = useState(today);
   const [roundDate, setRoundDate] = useState("");
   const [travelers, setTravelers] = useState(1);
   const [tripType, setTripType] = useState("");
+
+  const minRoundDate = travelDate 
+  ? new Date(new Date(travelDate).setDate(new Date(travelDate).getDate() + 1)).toISOString().split("T")[0] 
+  : today;
 
   // Main route type and filter mode
   const [routeType, setRouteType] = useState("all");
@@ -65,11 +71,6 @@ const TravelBooking = () => {
   const [mapLocationTo, setMapLocationTo] = useState([26.8206, 30.8025]); // Default: Egypt's center
   const [showMapFrom, setShowMapFrom] = useState(false); // To toggle "From" map modal
   const [showMapTo, setShowMapTo] = useState(false); // To toggle "To" map modal
-  
-  const today = new Date().toISOString().split("T")[0];
-  const minRoundDate = travelDate 
-    ? new Date(new Date(travelDate).setDate(new Date(travelDate).getDate() + 1)).toISOString().split("T")[0] 
-    : today;
 
   useEffect(() => {
     refetchBookingList();
@@ -79,7 +80,7 @@ const TravelBooking = () => {
     if (bookingListData && bookingListData.countries && bookingListData.cities) {
       setCountries(bookingListData.countries);
       setCities(bookingListData.cities);
-      setCars(bookingListData.brands);
+      setCars(bookingListData.car_category);
     }
   }, [bookingListData]);
 
@@ -124,19 +125,28 @@ const TravelBooking = () => {
       };
 
       if (filterMode === "general") {
-        formData.round_date = roundDate;
-        formData.type = tripType;
+        if (roundDate) {
+            formData.round_date = roundDate;
+            formData.type = "round_trip";
+        } else {
+            formData.type = "one_way";
+        }      
         formData.from = selectedFromCity;
         formData.to = selectedToCity;
         postGeneral(formData);
       } 
       else if (filterMode === "private") {
+        if (!auth.user) {
+          auth.toastError('You must be logged in to continue.');
+          navigate('/auth/login', { replace: true });
+          return;
+        }
         formData.country_id = selectedCountry;
         formData.city_id = selectedToCity;
         formData.address = addressTo;
         formData.from_address = addressFrom;
         formData.map = `https://www.google.com/maps?q=${mapLocationTo[0].toFixed(4)},${mapLocationTo[1].toFixed(4)}`; // Google Maps link for "To"
-        formData.brand_id = selectedCar;
+        formData.category_id = selectedCar;
         formData.from_city_id = selectedFromCity;
         formData.from_map = `https://www.google.com/maps?q=${mapLocationFrom[0].toFixed(4)},${mapLocationFrom[1].toFixed(4)}`; // Google Maps link for "From"
         
@@ -178,7 +188,7 @@ const TravelBooking = () => {
                     All
                   </TabsTrigger>
                   <TabsTrigger value="hiace" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    Hivace
+                    Hiaces
                   </TabsTrigger>
                   <TabsTrigger value="train" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     Trains
@@ -196,7 +206,7 @@ const TravelBooking = () => {
             {/* Form Section */}
             <div className="w-full md:p-4 p-2">
             <form onSubmit={handleSubmit}>
-                <div className={`grid grid-cols-2 lg:grid-cols-3 ${filterMode === "general" ? 'xl:grid-cols-6' : 'xl:grid-cols-5'} gap-2`}>
+                <div className={`grid grid-cols-2 lg:grid-cols-3 ${filterMode === "general" ? 'xl:grid-cols-5' : 'xl:grid-cols-5'} gap-2`}>
                   {/* Conditional Fields Based on Filter Mode */}
                   {filterMode === "private" && (
                     <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
@@ -264,7 +274,7 @@ const TravelBooking = () => {
                   {/* Round Date */}
                   {filterMode === "general" && (
                   <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                    <label className="text-sm font-semibold mb-1">Round Date</label>
+                    <label className="text-sm font-semibold mb-1">Return Date</label>
                     <Input
                       type="date"
                       value={roundDate}
@@ -287,26 +297,13 @@ const TravelBooking = () => {
                     />
                   </div>
 
-                  {filterMode === "general" ? (
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">Trip Type</label>
-                      <Select onValueChange={setTripType}>
-                        <SelectTrigger className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
-                          <SelectValue placeholder="Trip Type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="one_way">One Way</SelectItem>
-                          <SelectItem value="round_trip">Round Trip</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ) : (
+                  {filterMode === "private" && (
                     <>
                     <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">Car Brand</label>
+                      <label className="text-sm font-semibold mb-1">Car Category</label>
                       <Select onValueChange={setSelectedCar}>
                         <SelectTrigger className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
-                          <SelectValue placeholder="Select Brand" />
+                          <SelectValue placeholder="Select Car Category" />
                         </SelectTrigger>
                         <SelectContent>
                           {cars.map((car) => (
