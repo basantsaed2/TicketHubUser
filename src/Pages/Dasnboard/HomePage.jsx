@@ -104,7 +104,7 @@ const TravelBooking = () => {
     if (response && !loadingPost) {
           console.log('Response:', response.data);
           console.log('service:', activeTab);
-          navigate('/search_result', { state: { trips: response.data, service: activeTab } });
+          navigate('/trips', { state: { trips: response.data, service: activeTab } });
     }
   }, [response]);  
   
@@ -140,7 +140,7 @@ const TravelBooking = () => {
           auth.toastError('You must be logged in to continue.');
           navigate('/auth/login', { replace: true });
           return;
-        }
+        } 
         formData.country_id = selectedCountry;
         formData.city_id = selectedToCity;
         formData.address = addressTo;
@@ -184,16 +184,16 @@ const TravelBooking = () => {
             <div className="w-full md:w-2/4 mx-auto bg-white rounded-t-md border-b border-fifthColor">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid grid-cols-4 w-full p-0 text-black bg-white">
-                  <TabsTrigger value="all" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                  <TabsTrigger value="all" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     All
                   </TabsTrigger>
-                  <TabsTrigger value="hiace" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                  <TabsTrigger value="hiace" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     Hiaces
                   </TabsTrigger>
-                  <TabsTrigger value="train" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                  <TabsTrigger value="train" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     Trains
                   </TabsTrigger>
-                  <TabsTrigger value="bus" className="w-full font-semibold data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                  <TabsTrigger value="bus" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     Bus
                   </TabsTrigger>
                 </TabsList>

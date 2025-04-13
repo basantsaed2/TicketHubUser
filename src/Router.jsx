@@ -1,9 +1,9 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import App from "./App";
 import ProtectedLogin from "./ProtectedData/ProtectedRoute";
 import LoginPage from "./Pages/Authentication/LoginPage";
 import SignUpPage from "./Pages/Authentication/SignUpPage";
-import { CheckoutPage, HomePage, SearchResultPage,ProfilePage, WalletPage, PointsPage ,MyTripsPage } from "./Pages/allPages";
+import { CheckoutPage, HomePage, SearchResultPage,ProfilePage, WalletPage, PointsPage ,MyTripsPage, TripDetailsPage } from "./Pages/allPages";
 
 export const router = createBrowserRouter(
   [
@@ -32,8 +32,18 @@ export const router = createBrowserRouter(
         element: <HomePage />,
       },
       {
-        path:"search_result",
-        element:<SearchResultPage/>
+        path:"trips",
+        element:<Outlet/>,
+        children: [
+          {
+            path:"",
+            element:<SearchResultPage/>,
+          },
+          {
+            path:"details/:tripId",
+            element:<TripDetailsPage/>,
+          },
+        ]
       },
       {
         path:"checkout",

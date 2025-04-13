@@ -1,17 +1,9 @@
 import React, { useMemo } from "react";
 import { useLocation } from "react-router-dom";
-import {
-  FaBus,
-  FaTrain,
-  FaCar,
-  FaStar,
-  FaMapMarkerAlt,
-  FaClock,
-  FaMoneyBillWave,
-} from "react-icons/fa";
+import {FaBus,FaTrain,FaCar,FaStar,} from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from '../../Context/Auth';
-
+import Error from './../../Assets/Images/Error.png'
 // Helper function to calculate the time difference (assuming times are in "HH:MM:SS" format)
 const getTimeDifference = (startTime, endTime) => {
   if (!startTime || !endTime) return "";
@@ -134,7 +126,7 @@ const TripCard = ({ trip }) => {
               navigate('/auth/login', { replace: true });
               return;
             }
-            navigate('/checkout', { state: { trip } });
+            navigate(`details/${trip.id}`, { state: { trip } });
           }}
           className="w-full bg-mainColor hover:bg-mainColor/90 text-white font-semibold px-4 py-2 rounded"
         >
@@ -164,9 +156,12 @@ const SearchResultPage = () => {
       </p>
 
       {filteredTrips.length === 0 ? (
+        <div className="flex flex-col justify-center items-center">
         <p className="text-center text-gray-700">
           No trips available for the selected service.
         </p>
+        <img src={Error} alt="" />
+        </div>
       ) : (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
           {filteredTrips.map((trip) => (
