@@ -28,6 +28,7 @@ const TripDetailsPage = () => {
   const { state } = useLocation();
   const navigate = useNavigate();
   const trip = state.trip;
+  console.log("trip",trip)
 
   return (
     <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen text-gray-800">
@@ -38,38 +39,43 @@ const TripDetailsPage = () => {
             <div className="w-full md:w-1/3 rounded-xl sm:rounded-2xl overflow-hidden shadow-md sm:shadow-lg">
               <img
                 src={trip.bus.image_link}
-                alt="Bus"
+                alt="Trip"
                 className="w-full h-48 sm:h-56 md:h-64 object-cover"
               />
             </div>
           )}
-          
+
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-3 sm:mb-4">
               <div className="bg-orange-100 p-2 sm:p-3 rounded-full">
                 <MdDirectionsBus className="text-orange-600 text-xl sm:text-2xl" />
               </div>
               <div>
-                <span className="text-xs sm:text-sm font-medium text-gray-500">Bus Trip</span>
+                <span className="text-xs sm:text-sm font-medium text-gray-500">{trip.trip_type} Trip</span>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 capitalize">
                   {trip.trip_name}
                 </h1>
                 <p className="text-orange-600 font-medium text-sm sm:text-base">
-                  Bus #{trip.bus?.bus_number}
+                  {trip.trip_type} #{trip.bus?.bus_number}
                 </p>
               </div>
             </div>
-            
-            <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-4 sm:mt-6">
-              <InfoBlock 
-                label="Departure Date" 
-                value={formatDate(trip.date)} 
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mt-4 sm:mt-6">
+              <InfoBlock
+                label="Departure Date"
+                value={formatDate(trip.date)}
                 icon={<BsCalendarDate />}
               />
-              <InfoBlock 
-                label="Capacity" 
-                value={`${trip.avalible_seats}/${trip.bus?.capacity} seats`} 
+              <InfoBlock
+                label="Capacity"
+                value={`${trip.avalible_seats} Avalible seats`}
                 icon={<FaChair />}
+              />
+              <InfoBlock
+                label="Ticket Price"
+                value={`${trip.price} ${trip.currency?.symbol}`}
+                icon={<BsCashCoin />}
               />
             </div>
           </div>
@@ -85,15 +91,16 @@ const TripDetailsPage = () => {
                 Route Details
               </h2>
             </div>
-            
+
             <div className="p-4 sm:p-6">
               <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
-                <StationCard 
-                  type="departure" 
-                  station={trip.pickup_station} 
-                  time={trip.deputre_time} 
+                <StationCard
+                  type="departure"
+                  city={trip.city.name}
+                  station={trip.pickup_station}
+                  time={trip.deputre_time}
                 />
-                
+
                 <div className="flex flex-col items-center my-2 sm:my-4">
                   <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-orange-100 flex items-center justify-center">
                     <FaBus className="text-orange-500 text-lg sm:text-xl" />
@@ -102,43 +109,44 @@ const TripDetailsPage = () => {
                     {getDuration(trip.deputre_time, trip.arrival_time)}
                   </div>
                 </div>
-                
-                <StationCard 
-                  type="arrival" 
-                  station={trip.dropoff_station} 
-                  time={trip.arrival_time} 
+
+                <StationCard
+                  type="arrival"
+                  city={trip.to_city.name}
+                  station={trip.dropoff_station}
+                  time={trip.arrival_time}
                 />
               </div>
             </div>
           </div>
 
           {/* Pricing Section */}
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
+          {/* <div className="bg-white rounded-xl sm:rounded-2xl shadow-md overflow-hidden">
             <div className="p-4 sm:p-6 border-b border-gray-100">
               <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
                 <BsCashCoin className="text-orange-500 text-sm sm:text-base" />
                 Pricing Details
               </h2>
             </div>
-            
+
             <div className="p-4 sm:p-6 grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
-              <PriceBlock 
-                label="Ticket Price" 
+              <PriceBlock
+                label="Ticket Price"
                 value={`${trip.price} ${trip.currency?.symbol}`}
                 highlight={false}
               />
-              <PriceBlock 
-                label="Service Fees" 
+              <PriceBlock
+                label="Service Fees"
                 value={`${trip.service_fees} ${trip.currency?.symbol}`}
                 highlight={false}
               />
-              <PriceBlock 
-                label="Total Price" 
+              <PriceBlock
+                label="Total Price"
                 value={`${trip.price + trip.service_fees} ${trip.currency?.symbol}`}
                 highlight={true}
               />
             </div>
-          </div>
+          </div> */}
 
           {/* Additional Info - Stack on mobile, side-by-side on larger screens */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
@@ -173,7 +181,7 @@ const TripDetailsPage = () => {
                   <div>
                     <p className="font-medium text-sm sm:text-base">Cancellation Window</p>
                     <p className="text-xs sm:text-sm text-gray-600">
-                      {trip.cancelation_hours > 0 
+                      {trip.cancelation_hours > 0
                         ? `Allowed up to ${trip.cancelation_hours} hours before departure`
                         : 'No cancellations allowed'}
                     </p>
@@ -186,9 +194,15 @@ const TripDetailsPage = () => {
                   <div>
                     <p className="font-medium text-sm sm:text-base">Cancellation Fee</p>
                     <p className="text-xs sm:text-sm text-gray-600">
-                      {trip.cancelation_pay_value > 0 
-                        ? `${trip.cancelation_pay_value} ${trip.currency?.symbol} (${trip.cancelation_pay_amount})`
-                        : 'No fee'}
+                      {trip.cancelation_pay_value > 0 ? (
+                        trip.cancelation_pay_amount === "percentage" ? (
+                          `${trip.cancelation_pay_value}%`
+                        ) : (
+                          `${trip.cancelation_pay_value} ${trip.currency?.symbol}`
+                        )
+                      ) : (
+                        'No fee'
+                      )}
                     </p>
                   </div>
                 </li>
@@ -239,19 +253,17 @@ const InfoBlock = ({ label, value, icon }) => (
   </div>
 );
 
-const StationCard = ({ type, station, time }) => (
-  <div className={`w-full md:w-1/2 p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border ${
-    type === 'departure' ? 'border-orange-200 bg-orange-50' : 'border-gray-200 bg-gray-50'
-  }`}>
+const StationCard = ({ type,city, station, time }) => (
+  <div className={`w-full md:w-1/2 p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border ${type === 'departure' ? 'border-orange-200 bg-orange-50' : 'border-gray-200 bg-gray-50'
+    }`}>
     <div className="flex items-center gap-2 sm:gap-3 mb-1 sm:mb-2">
-      <div className={`p-1 sm:p-2 rounded-full ${
-        type === 'departure' ? 'bg-orange-100 text-orange-600' : 'bg-gray-200 text-gray-600'
-      }`}>
+      <div className={`p-1 sm:p-2 rounded-full ${type === 'departure' ? 'bg-orange-100 text-orange-600' : 'bg-gray-200 text-gray-600'
+        }`}>
         <FaMapMarkerAlt className="text-sm sm:text-base" />
       </div>
       <span className="font-medium text-xs sm:text-sm text-gray-700 capitalize">{type}</span>
     </div>
-    <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">{station?.name}</h3>
+    <h3 className="text-base sm:text-lg md:text-xl font-bold text-gray-900 mb-1">{station?.name} ({city})</h3>
     <div className="flex items-center gap-1 sm:gap-2 text-xs sm:text-sm text-gray-600">
       <FaClock className="text-xs sm:text-sm" />
       <span>{time?.substring(0, 5) || "N/A"}</span>
@@ -260,13 +272,11 @@ const StationCard = ({ type, station, time }) => (
 );
 
 const PriceBlock = ({ label, value, highlight }) => (
-  <div className={`p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border ${
-    highlight ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
-  }`}>
-    <p className="text-xs sm:text-sm text-gray-500">{label}</p>
-    <p className={`text-lg sm:text-xl md:text-2xl font-bold ${
-      highlight ? 'text-orange-600' : 'text-gray-800'
+  <div className={`p-3 sm:p-4 md:p-5 rounded-lg sm:rounded-xl border ${highlight ? 'border-orange-300 bg-orange-50' : 'border-gray-200'
     }`}>
+    <p className="text-xs sm:text-sm text-gray-500">{label}</p>
+    <p className={`text-lg sm:text-xl md:text-2xl font-bold ${highlight ? 'text-orange-600' : 'text-gray-800'
+      }`}>
       {value}
     </p>
   </div>

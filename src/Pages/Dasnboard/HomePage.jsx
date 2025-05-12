@@ -104,7 +104,14 @@ const TravelBooking = () => {
     if (response && !loadingPost) {
           console.log('Response:', response.data);
           console.log('service:', activeTab);
-          navigate('/trips', { state: { trips: response.data, service: activeTab } });
+          navigate('/trips', { state: { trips: response.data, service: activeTab, searchData: {  // Add the form data you want to pass
+            from: selectedFromCity,
+            to: selectedToCity,
+            date: travelDate,
+            roundDate: roundDate,
+            travelers: travelers,
+            tripType: roundDate ? "round_trip" : "one_way"
+          } } });
     }
   }, [response]);  
   
@@ -181,7 +188,9 @@ const TravelBooking = () => {
               </button>
             </div>
             {/* Main Tabs: All, Hivace, Trains, Bus */}
-            <div className="w-full md:w-2/4 mx-auto bg-white rounded-t-md border-b border-fifthColor">
+            {
+              filterMode==="general" && 
+              <div className="w-full md:w-2/4 mx-auto bg-white rounded-t-md border-b border-fifthColor">
               <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 <TabsList className="grid grid-cols-4 w-full p-0 text-black bg-white">
                   <TabsTrigger value="all" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
@@ -203,6 +212,8 @@ const TravelBooking = () => {
                 <TabsContent value="bus" />
               </Tabs>
             </div>
+            }
+
             {/* Form Section */}
             <div className="w-full md:p-4 p-2">
             <form onSubmit={handleSubmit}>

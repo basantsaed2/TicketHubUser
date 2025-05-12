@@ -1,299 +1,3 @@
-// import React, { useState, useEffect } from "react";
-// import { useLocation, useNavigate } from "react-router-dom";
-// import { Input } from "@/Components/ui/input";
-// import { Button } from "@/Components/ui/button";
-// import { usePost } from "../../Hooks/usePostJson";
-// import { useGet } from "../../Hooks/useGet";
-// import { FaWallet, FaCreditCard, FaPaypal } from "react-icons/fa";
-// import { useAuth } from '../../Context/Auth';
-
-// const CheckoutPage = () => {
-//   const navigate = useNavigate();
-//   const { state } = useLocation();
-//   // Expecting state: { trip: selectedTrip }
-//   const { trip } = state || {};
-//   const auth = useAuth();
-// console.log("TRip",trip)
-//   // Base API URL
-//   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-//   // Payment endpoints
-//   const { postData:postPayment ,loadingPost:loadingBookWallet, response:responseBookWallet} = usePost({ url: `${apiUrl}/user/booking/payment` });
-//   const { postData:postPaymentWallet ,loadingPost, response} = usePost({ url: `${apiUrl}/user/booking/payment_wallet` });
-//   const { refetch: refetchBookingList, data: bookingListData } = useGet({ url:`${apiUrl}/user/booking/lists` });
-//   // Get available payment methods from API
-//   const [paymentMethods, setPaymentMethods] = useState([]);
-//   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
-
-//   useEffect(() => {
-//     refetchBookingList();
-//   }, [refetchBookingList]);
-
-//   useEffect(() => {
-//     if (bookingListData && bookingListData.payment_methods) {
-//       // Use API methods and add Wallet if not present.
-//       const methods = [...bookingListData.payment_methods];
-//       if (!methods.find((m) => m.id === "wallet")) {
-//         methods.unshift({
-//           id: "wallet",
-//           name: "Wallet",
-//           image: "https://via.placeholder.com/50?text=Wallet",
-//           icon: <FaWallet className="text-mainColor" />,
-//         });
-//       }
-//       setPaymentMethods(methods);
-//       setSelectedPaymentMethod(methods[0].id);
-//     }
-//   }, [bookingListData]);
-
-//   useEffect(() => {
-//     if((response && !loadingPost) || (responseBookWallet && !loadingBookWallet)){
-
-//     }
-//   }, [response]);
-
-//   // Payment Details Form Fields
-//   const [travelDate, setTravelDate] = useState(trip ? trip.date : "");
-//   const [receiptImage, setReceiptImage] = useState(null);
-//   const [travelers, setTravelers] = useState(1);
-//   const [travelerDetails, setTravelerDetails] = useState([{ name: "", age: "" }]);
-
-//   const today = new Date().toISOString().split("T")[0];
-
-//   // Toggle to show payment details form
-//   const [showForm, setShowForm] = useState(false);
-//   const [modalVisible, setModalVisible] = useState(false);
-
-//    // Update the number of travelers and adjust travelerDetails accordingly
-//    const handleTravelersChange = (e) => {
-//     const value = Math.min(Math.max(e.target.value, 1), trip.avalible_seats); // Constrain to 1 and available_seats
-//     setTravelers(value);
-
-//     // Ensure travelerDetails has enough entries for the selected travelers
-//     const newDetails = Array.from({ length: value }, (_, i) => ({
-//       name: travelerDetails[i]?.name || "",
-//       age: travelerDetails[i]?.age || "",
-//     }));
-//     setTravelerDetails(newDetails);
-//   };
-
-//   // Handle changes for individual traveler details (name or age)
-//   const handleTravelerChange = (index, field, value) => {
-//     const updated = [...travelerDetails];
-//     updated[index][field] = value;
-//     setTravelerDetails(updated);
-//   };
-
-//   const handleReceiptChange = (e) => {
-//     setReceiptImage(e.target.files[0]);
-//   };
-
-//   const handlePaymentSubmit = async (e) => {
-//     e.preventDefault();
-//     if (!trip) {
-//         auth.toastError("No trip selected. Please go back and select a trip.");
-//       return;
-//     }
-//     if (!travelDate) {
-//         auth.toastError("Please enter the travel date.");
-//       return;
-//     }
-//     // Build form data
-//     const formData = new FormData();
-//     formData.append("trip_id", trip.id);
-//     formData.append("travelers", travelers);
-//     formData.append("amount", trip.price);
-//     formData.append("travel_date", travelDate);
-//     travelerDetails.forEach((traveler, index) => {
-//       formData.append(`travellers_data[${index}][name]`, traveler.name);
-//       formData.append(`travellers_data[${index}][age]`, traveler.age);
-//     });
-    
-//     formData.append("receipt_image", receiptImage);
-//     if (selectedPaymentMethod === "wallet") {
-//       postPaymentWallet(formData ,"Payment submitted successfully!");
-//     } else {
-//       formData.append("payment_method_id", selectedPaymentMethod);
-//      postPayment(formData,"Payment submitted successfully!");
-//     }
-//   };
-
-//   useEffect(() => {
-//     if (!loadingPost && response) {
-//       setModalVisible(true);
-//       // navigate("/"); 
-//        }
-//   }, [loadingPost, response, navigate]);
-
-//   if (!trip) {
-//     return (
-//       <div className="min-h-screen flex items-center justify-center">
-//         <p>No trip selected. Please go back and select a trip.</p>
-//       </div>
-//     );
-//   }
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 p-6 space-y-8">
-//       <h1 className="text-3xl font-bold text-center">Checkout</h1>
-
-//         <div className="w-full p-4">
-
-//           {/* Top Section: Trip Info & Payment Methods */}
-//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-//             {/* Trip Info Card */}
-//             <div className="bg-[#14142B] text-white rounded-lg p-4 text-sm space-y-3">
-//               <p className="font-semibold text-white text-2xl">Trip Info</p>
-//               <p className="font-medium text-lg">📍 Route: {trip.pickup_station?.name} → {trip.dropoff_station?.name}</p>
-//               <p className="text-lg">🎫 Trip Number: {trip.trip_number || "55841"}</p>
-//               <p className="text-lg">🕒 Departure: {trip.deputre_time}</p>
-//               <p className="text-lg">🕘 Arrival: {trip.arrival_time}</p>
-//               <p className="text-orange-400 font-semibold text-lg pt-3  border-t-2">💵 Price: ${trip.price} / Person</p>
-//             </div>
-
-//             {/* Payment Methods */}
-//             <div className="bg-[#F2F2F6] rounded-lg p-4 text-sm">
-//             <h3 className="text-xl font-semibold text-secoundColor mb-1">Payment Merthods</h3>
-//             <div className="flex flex-col gap-2">
-//                 {paymentMethods.map((method) => (
-//                   <label
-//                     key={method.id}
-//                     className={`flex items-center justify-between p-2 border rounded-lg cursor-pointer ${
-//                       selectedPaymentMethod === method.id
-//                         ? "border-orange-500 bg-orange-100"
-//                         : "bg-white"
-//                     }`}
-//                   >
-//                     <div className="flex items-center gap-2">
-//                     <input
-//                         type="radio"
-//                         name="paymentMethod"
-//                         value={method.id}
-//                         checked={selectedPaymentMethod === method.id}
-//                         onChange={() => setSelectedPaymentMethod(method.id)}
-//                         className={`h-5 w-5 rounded-full appearance-none border-2 ${
-//                           selectedPaymentMethod === method.id
-//                             ? "border-orange-500 bg-orange-500"
-//                             : "border-gray-300 bg-white"
-//                         }`}         />
-//                       <span className="text-lg">{method.name}</span>
-//                     </div>
-//                     <div className="w-12 h-14  rounded">
-//                     <img src={method.image_link} alt={method.name} className="w-full h-full object-contain rounded" />
-//                     </div>
-//                   </label>
-//                 ))}
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Compact Form Section */}
-//           <form onSubmit={handlePaymentSubmit} className="bg-white border border-gray-300 rounded-lg p-4 text-sm space-y-4">
-//           <h3 className="text-xl font-semibold text-secoundColor border-b pb-2">Payment Details</h3>
-
-//           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-//             {/* <div className="flex flex-col">
-//               <label className="text-gray-700 text-sm font-medium mb-1">Travel Date</label>
-//               <Input
-//                 type="date"
-//                 value={travelDate}
-//                 min={today}
-//                 className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-//               />
-//             </div> */}
-
-//             <div className="flex flex-col">
-//               <label className="text-gray-700 text-sm font-medium mb-1">Number of Travelers</label>
-//               <Input
-//                 type="number"
-//                 value={travelers}
-//                 onChange={handleTravelersChange}
-//                 min="1"
-//                 max={trip.available_seats}
-//                 className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-//               />
-//             </div>
-
-//             <div className="flex flex-col">
-//               <label className="text-gray-700 text-sm font-medium mb-1">Receipt Image</label>
-//               <Input
-//                 type="file"
-//                 onChange={handleReceiptChange}
-//                 className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-//               />
-//             </div>
-//           </div>
-
-//           {travelerDetails.map((traveler, index) => (
-//             <div
-//               key={index}
-//               className="grid grid-cols-1 md:grid-cols-2 gap-4 border border-gray-200 rounded-md p-2 bg-gray-50 mt-2"
-//             >
-//               <div className="flex flex-col">
-//                 <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Name</label>
-//                 <Input
-//                   type="text"
-//                   value={traveler.name}
-//                   onChange={(e) => handleTravelerChange(index, "name", e.target.value)}
-//                   className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-//                   placeholder="Enter name"
-//                 />
-//               </div>
-
-//               <div className="flex flex-col">
-//                 <label className="text-gray-700 text-sm font-medium mb-1">Traveler {index + 1} Age</label>
-//                 <Input
-//                   type="number"
-//                   value={traveler.age}
-//                   onChange={(e) => handleTravelerChange(index, "age", e.target.value)}
-//                   min="0"
-//                   className="w-full border border-mainColor rounded-md focus:ring-mainColor"
-//                   placeholder="Enter age"
-//                 />
-//               </div>
-//             </div>
-//             ))}
-//           <div className="w-full flex items-center justify-center">
-//             <Button
-//               type="submit"
-//               className="text-lg  bg-mainColor border border-mainColor hover:bg-mainColor/90 text-white font-semibold py-6 rounded-md mt-4"
-//             >
-//               Confirm Payment
-//             </Button>
-//             </div>
-//           </form>
-
-//         </div>
-
-
-
-//       {/* Confirmation Modal */}
-//       {modalVisible && (
-//         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-//           <div className="bg-white rounded-xl shadow-2xl p-8 max-w-md w-full text-center">
-//             <h2 className="text-2xl font-bold text-mainColor mb-4">
-//               Thank You!
-//             </h2>
-//             <p className="text-gray-600 mb-6">
-//               Your booking is under review. We will contact you soon.
-//             </p>
-//             <Button
-//               onClick={() => {
-//                 setModalVisible(false);
-//                 navigate(-1);
-//               }}
-//               className="bg-mainColor hover:bg-mainColor/90 text-white font-semibold py-2 rounded w-full"
-//             >
-//               Close
-//             </Button>
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
-// };
-
-// export default CheckoutPage;
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Input } from "@/Components/ui/input";
@@ -320,129 +24,121 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
   };
 
   const renderBusLayout = () => {
-    // Define the seat layout for bus/Hiace
     const seatLayout = [
-      // First row (driver + passenger)
+      // Row 0: Driver + seat 1
       [
-        { type: 'driver' }, 
-        { number: 1, row: 1, col: 2 },
-        { number: 2, row: 1, col: 3 }
+        { type: 'driver' },
+        { number: 1 }
       ],
-      // Second row (4 seats)
+      // Row 1: 2, 3, 4
       [
-        { number: 3, row: 2, col: 1 },
-        { number: 4, row: 2, col: 2 },
-        { number: 5, row: 2, col: 3 },
-        { number: 6, row: 2, col: 4 }
+        { number: 2 },
+        { number: 3 },
+        { number: 4 }
       ],
-      // Third row (4 seats)
+      // Row 2: 5, 6 (left), 7 (right)
       [
-        { number: 7, row: 3, col: 1 },
-        { number: 8, row: 3, col: 2 },
-        { number: 9, row: 3, col: 3 },
-        { number: 10, row: 3, col: 4 }
+        { number: 5 },
+        { number: 6 },
+        null,
+        { number: 7 }
       ],
-      // Fourth row (4 seats)
+      // Row 3: 8, 9 (left), 10 (right)
       [
-        { number: 11, row: 4, col: 1 },
-        { number: 12, row: 4, col: 2 },
-        { number: 13, row: 4, col: 3 },
-        { number: 14, row: 4, col: 4 }
+        { number: 8 },
+        { number: 9 },
+        null,
+        { number: 10 }
+      ],
+      // Row 4: 11, 12, 13, 14
+      [
+        { number: 11 },
+        { number: 12 },
+        { number: 13 },
+        { number: 14 }
       ]
     ];
-
+  
     return (
-      <div className="relative bg-gray-50 p-2 sm:p-4 md:p-6 rounded-xl border border-gray-200">
-        {/* Bus outline */}
-        <div className="absolute inset-0 border-2 sm:border-4 border-gray-200 rounded-xl opacity-10 pointer-events-none"></div>
-        
-        {/* Driver position */}
-        <div className="absolute left-1/2 top-2 sm:top-4 transform -translate-x-1/2 flex flex-col items-center">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 bg-gray-200 rounded-full flex items-center justify-center mb-1">
-            <FaUserAlt className="text-gray-600 text-sm sm:text-base md:text-lg" />
-          </div>
-          <span className="text-xs font-medium text-gray-500">Driver</span>
-        </div>
-
-        {/* Seats grid */}
-        <div className="grid grid-rows-4 gap-2 sm:gap-4 md:gap-6 mt-12 sm:mt-16">
+      <div className="relative bg-gray-50 p-4 rounded-xl border border-gray-200">
+        <h3 className="text-center mb-4 font-medium text-gray-700">Select An Available Seat</h3>
+  
+        <div className="flex flex-col gap-4">
           {seatLayout.map((row, rowIndex) => (
-            <div key={`row-${rowIndex}`} className="grid grid-cols-4 gap-1 sm:gap-2 md:gap-4">
-              {row.map((seat) => {
-                if (seat.type === 'driver') {
-                  return <div key="driver" className="flex items-center justify-center"></div>;
+            <div key={`row-${rowIndex}`} className="flex justify-center gap-4">
+              {row.map((seat, seatIndex) => {
+                if (!seat) {
+                  return <div key={`empty-${seatIndex}`} className="w-12 h-12" />;
                 }
-
-                const isAvailable = isSeatAvailable(seat.number);
-                const isSelected = selectedSeats.includes(seat.number);
-                
+  
+                if (seat.type === 'driver') {
+                  return (
+                    <div key="driver" className="w-12 h-12 flex items-center justify-center bg-black text-white rounded">
+                      D
+                    </div>
+                  );
+                }
+  
+                const seatNumber = seat.number;
+                const isAvailable = isSeatAvailable(seatNumber);
+                const isSelected = selectedSeats.includes(seatNumber);
+  
                 return (
-                  <div 
-                    key={`seat-${seat.number}`} 
-                    className={`flex items-center justify-center ${
-                      seat.col === 1 ? 'mr-2 sm:mr-4 md:mr-8' : 
-                      seat.col === 4 ? 'ml-2 sm:ml-4 md:ml-8' : ''
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      onClick={() => toggleSeatSelection(seat.number)}
-                      disabled={!isAvailable}
-                      className={`w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 flex items-center justify-center rounded-md sm:rounded-lg border-2 transition-all transform hover:scale-105
-                        ${isSelected ? 'bg-orange-500 border-orange-600 text-white shadow-md' : 
-                          isAvailable ? 'bg-white border-gray-300 hover:border-orange-400' : 
+                  <button
+                    key={`seat-${seatNumber}`}
+                    type="button"
+                    onClick={() => toggleSeatSelection(seatNumber)}
+                    disabled={!isAvailable}
+                    className={`w-12 h-12 flex items-center justify-center rounded-md border-2 relative transition-all
+                      ${isSelected ? 'bg-orange-500 border-orange-600 text-white shadow-md' :
+                        isAvailable ? 'bg-white border-gray-300 hover:border-orange-400' :
                           'bg-gray-200 border-gray-300 cursor-not-allowed'}`}
-                    >
-                      {isAvailable ? (
-                        <>
-                          <span className="font-medium text-xs sm:text-sm md:text-base">{seat.number}</span>
-                          {isSelected && (
-                            <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-3 h-3 sm:w-4 sm:h-4 flex items-center justify-center text-[8px] sm:text-xs">
-                              ✓
-                            </div>
-                          )}
-                        </>
-                      ) : (
-                        <IoMdClose className="text-gray-400 text-sm sm:text-base" />
-                      )}
-                    </button>
-                  </div>
+                  >
+                    {isAvailable ? (
+                      <>
+                        <span className="font-medium">{seatNumber}</span>
+                        {isSelected && (
+                          <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                            ✓
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <IoMdClose className="text-gray-400" />
+                    )}
+                  </button>
                 );
               })}
             </div>
           ))}
         </div>
-
-        {/* Aisle markers */}
-        <div className="absolute top-1/2 left-1/4 transform -translate-x-1/2 -translate-y-1/2 h-3/5 w-0.5 sm:w-1 bg-gray-300 rounded-full opacity-20"></div>
-        <div className="absolute top-1/2 right-1/4 transform translate-x-1/2 -translate-y-1/2 h-3/5 w-0.5 sm:w-1 bg-gray-300 rounded-full opacity-20"></div>
       </div>
     );
-  };
+  };  
 
   return (
-    <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-4 sm:p-6 mb-6 border border-gray-200">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 sm:mb-6 gap-2 sm:gap-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-800">Select Your Seats</h2>
-        <div className="bg-orange-100 text-orange-800 px-3 py-1 sm:px-4 sm:py-2 rounded-full font-medium text-sm sm:text-base">
+    <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-6 gap-2">
+        <h2 className="text-xl font-bold text-gray-800">Select Your Seats</h2>
+        <div className="bg-orange-100 text-orange-800 px-4 py-2 rounded-full font-medium">
           {selectedSeats.length} of {travelers} selected
         </div>
       </div>
-      
+
       {renderBusLayout()}
 
-      <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mt-6 sm:mt-8">
+      <div className="flex flex-wrap justify-center gap-8 mt-8">
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-orange-500 rounded-sm shadow"></div>
-          <span className="text-gray-700 font-medium text-sm sm:text-base">Selected</span>
+          <div className="w-5 h-5 bg-orange-500 rounded-sm shadow"></div>
+          <span className="text-gray-700 font-medium">Selected</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-white border-2 border-gray-300 rounded-sm"></div>
-          <span className="text-gray-700 font-medium text-sm sm:text-base">Available</span>
+          <div className="w-5 h-5 bg-white border-2 border-gray-300 rounded-sm"></div>
+          <span className="text-gray-700 font-medium">Available</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gray-200 border-2 border-gray-300 rounded-sm"></div>
-          <span className="text-gray-700 font-medium text-sm sm:text-base">Unavailable</span>
+          <div className="w-5 h-5 bg-gray-200 border-2 border-gray-300 rounded-sm"></div>
+          <span className="text-gray-700 font-medium">Unavailable</span>
         </div>
       </div>
     </div>
@@ -459,7 +155,7 @@ const TravelerInfoCard = ({ index, traveler, onChange, seatNumber }) => {
           </span>
         )}
       </div>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-2">Full Name</label>
@@ -472,7 +168,7 @@ const TravelerInfoCard = ({ index, traveler, onChange, seatNumber }) => {
             required
           />
         </div>
-        
+
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-2">Age</label>
           <Input
@@ -490,14 +186,12 @@ const TravelerInfoCard = ({ index, traveler, onChange, seatNumber }) => {
     </div>
   );
 };
-
 const PaymentMethodCard = ({ method, selected, onChange }) => {
   return (
     <div
       onClick={() => onChange(method.id)}
-      className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
-        selected ? "border-orange-500 bg-orange-50" : "border-gray-200 hover:border-orange-300"
-      }`}
+      className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${selected ? "border-orange-500 bg-orange-50" : "border-gray-200 hover:border-orange-300"
+        }`}
     >
       <div className="flex items-center gap-4">
         <div className={`p-3 rounded-lg ${selected ? "bg-orange-100 text-orange-600" : "bg-gray-100 text-gray-600"}`}>
@@ -521,14 +215,14 @@ const CheckoutPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
   const { trip } = state || {};
-  console.log("Trip",trip)
+  console.log("Trip", trip)
   const auth = useAuth();
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { postData: postPayment, loadingPost: loadingBookWallet, response: responseBookWallet } = usePost({ url: `${apiUrl}/user/booking/payment` });
   const { postData: postPaymentWallet, loadingPost, response } = usePost({ url: `${apiUrl}/user/booking/payment_wallet` });
   const { refetch: refetchBookingList, data: bookingListData } = useGet({ url: `${apiUrl}/user/booking/lists` });
-  
+
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [travelDate] = useState(trip ? trip.date : "");
@@ -548,7 +242,7 @@ const CheckoutPage = () => {
         ...m,
         icon: <FaCreditCard className="text-mainColor" />
       }));
-      
+
       if (!methods.find(m => m.id === "wallet")) {
         methods.unshift({
           id: "wallet",
@@ -558,7 +252,7 @@ const CheckoutPage = () => {
           balance: auth.user?.wallet_balance
         });
       }
-      
+
       setPaymentMethods(methods);
       setSelectedPaymentMethod(methods[0]?.id || "");
     }
@@ -566,10 +260,10 @@ const CheckoutPage = () => {
 
   useEffect(() => {
     if ((response && !loadingPost) || (responseBookWallet && !loadingBookWallet)) {
-      console.log("response",response)
-      if (responseBookWallet.data && responseBookWallet.data?.paymentLink){
+      console.log("response", response)
+      if (responseBookWallet.data && responseBookWallet.data?.paymentLink) {
         window.open(responseBookWallet.data?.paymentLink, '_blank');
-      }else{
+      } else {
         setModalVisible(true);
       }
     }
@@ -578,13 +272,13 @@ const CheckoutPage = () => {
   const handleTravelersChange = (e) => {
     const newTravelers = Math.min(Math.max(parseInt(e.target.value) || 1, 1), trip.avalible_seats);
     setTravelers(newTravelers);
-    
+
     // Reset traveler details
     setTravelerDetails(Array.from({ length: newTravelers }, (_, i) => ({
       name: travelerDetails[i]?.name || "",
       age: travelerDetails[i]?.age || "",
     })));
-    
+
     // Remove excess seats if decreasing travelers
     if (newTravelers < selectedSeats.length) {
       setSelectedSeats(selectedSeats.slice(0, newTravelers));
@@ -603,39 +297,39 @@ const CheckoutPage = () => {
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Convert selectedSeats to array if it isn't already
-    const seatsArray = Array.isArray(selectedSeats) ? selectedSeats : 
-                      typeof selectedSeats === 'string' ? selectedSeats.split(',').map(Number) : 
-                      [];
-  
+    const seatsArray = Array.isArray(selectedSeats) ? selectedSeats :
+      typeof selectedSeats === 'string' ? selectedSeats.split(',').map(Number) :
+        [];
+
     // Validate seat count matches travelers
     if (seatsArray.length !== travelers) {
       auth.toastError(`Please select exactly ${travelers} seat(s)`);
       return;
     }
-  
+
     const formData = new FormData();
     formData.append("trip_id", trip.id);
     formData.append("travelers", travelers);
     formData.append("amount", trip.price * travelers);
     formData.append("travel_date", travelDate);
-    
+
     // Append each seat individually with index
     seatsArray.forEach((seat, index) => {
       formData.append(`seats[${index}]`, seat);
     });
-  
+
     // Append traveler details (your existing code)
     travelerDetails.forEach((traveler, index) => {
       formData.append(`travellers_data[${index}][name]`, traveler.name);
       formData.append(`travellers_data[${index}][age]`, traveler.age);
     });
-    
+
     if (receiptImage) {
       formData.append("receipt_image", receiptImage);
     }
-  
+
     if (selectedPaymentMethod === "wallet") {
       await postPaymentWallet(formData, "Payment submitted successfully!");
     } else {
@@ -723,7 +417,7 @@ const CheckoutPage = () => {
             </div>
 
             {/* Seat selection */}
-            <SeatSelection 
+            <SeatSelection
               trip={trip}
               travelers={travelers}
               onSeatsSelected={setSelectedSeats}
@@ -733,7 +427,7 @@ const CheckoutPage = () => {
             {/* Traveler information */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Traveler Information</h2>
-              
+
               <div className="mb-6">
                 <label className="block text-gray-700 font-medium mb-3">Number of Travelers</label>
                 <Input
@@ -755,26 +449,6 @@ const CheckoutPage = () => {
                   seatNumber={selectedSeats[index]}
                 />
               ))}
-
-              <div className="mt-6">
-                <label className="block text-gray-700 font-medium mb-3">Receipt Image (Optional)</label>
-                <div className="flex items-center gap-4">
-                  <label className="cursor-pointer">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition">
-                      <span className="text-gray-600">Click to upload receipt</span>
-                      <input
-                        type="file"
-                        onChange={handleReceiptChange}
-                        className="hidden"
-                        accept="image/*"
-                      />
-                    </div>
-                  </label>
-                  {receiptImage && (
-                    <span className="text-sm text-gray-600">{receiptImage.name}</span>
-                  )}
-                </div>
-              </div>
             </div>
           </div>
 
@@ -782,7 +456,7 @@ const CheckoutPage = () => {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Payment Method</h2>
-              
+
               <div className="space-y-4">
                 {paymentMethods.map((method) => (
                   <PaymentMethodCard
@@ -794,11 +468,39 @@ const CheckoutPage = () => {
                 ))}
               </div>
 
+              {/* Vodafone Receipt Upload - Only shown when Vodafone is selected */}
+              {selectedPaymentMethod && String(selectedPaymentMethod).toLowerCase().includes('vodafone') && (
+                <div className="mt-6">
+                  <label className="block text-gray-700 font-medium mb-3">Receipt Image (Required for Vodafone Cash)</label>
+                  <div className="flex items-center gap-4">
+                    <label className="cursor-pointer">
+                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition">
+                        <span className="text-gray-600">Click to upload payment receipt</span>
+                        <input
+                          type="file"
+                          onChange={handleReceiptChange}
+                          className="hidden"
+                          accept="image/*"
+                          required
+                        />
+                      </div>
+                    </label>
+                    {receiptImage && (
+                      <div className="flex items-center">
+                        <span className="text-sm text-gray-600 mr-2">{receiptImage.name}</span>
+                        <FaCheckCircle className="text-green-500" />
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-2">Please upload a clear image of your Vodafone Cash payment receipt</p>
+                </div>
+              )}
+
               <div className="mt-8">
                 <Button
                   onClick={handlePaymentSubmit}
                   className="w-full py-4 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02]"
-                  disabled={loadingPost || loadingBookWallet}
+                  disabled={loadingPost || loadingBookWallet || (selectedPaymentMethod === "vodafone" && !receiptImage)}
                 >
                   {loadingPost || loadingBookWallet ? (
                     <span className="flex items-center justify-center">
