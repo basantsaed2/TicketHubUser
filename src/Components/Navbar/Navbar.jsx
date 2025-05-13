@@ -10,7 +10,7 @@ import { TbLogout } from "react-icons/tb";
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../Context/Auth';
 import { MdMenuOpen } from "react-icons/md";
-
+import LogoImage from '../../Assets/Images/Logo.png'
 const Navbar = () => {
        const location = useLocation();
        const user = useSelector(state => state.user?.data);
@@ -31,18 +31,21 @@ const Navbar = () => {
                             <nav className='relative w-full flex align-center justify-between py-2 px-6 bg-mainColor shadow-md'>
                                    <div className='sm:w-9/12 lg:w-3/12 flex items-center justify-start gap-x-2 z-10'>
                                           <Link to={'/'} className="flex items-center justify-start gap-x-2">
-                                                 <MainIcon/>
+                                                 {/* <MainIcon/> */}
+                                                 <div className="w-32 h-14 rounded-full flex items-center justify-center">
+                                                        <img src={LogoImage} className='rounded-full object-cover w-full h-full' alt="Main Icon" />
+                                                 </div> 
                                                  <span className='text-3xl text-secoundColor font-TextFontRegular'>Ticket Hub</span>
                                           </Link>
                                    </div>
                                    {
-                                   user && (
-                                   <div className='sm:hidden lg:flex w-5/12 items-center'>
-                                          <Links />
-                                   </div>
-                                   )
+                                          user && (
+                                                 <div className='sm:hidden lg:flex w-5/12 items-center'>
+                                                        <Links />
+                                                 </div>
+                                          )
                                    }
-                                  
+
                                    <div className='sm:hidden xl:flex w-3/12 items-center justify-end gap-x-4'>
 
                                           {user ? (
@@ -53,7 +56,7 @@ const Navbar = () => {
                                                         <Link to={'/profile'}>
                                                                <LuUserRound className='text-white text-3xl' />
                                                         </Link>
-                                                        <Link  onClick={handleLogout}>
+                                                        <Link onClick={handleLogout}>
                                                                <TbLogout className='text-white text-3xl' />
                                                         </Link>
                                                  </>
@@ -88,36 +91,36 @@ const Navbar = () => {
                                                  } transition-all duration-300 left-0 bg-white shadow-md sm:flex xl:hidden flex-col items-center justify-center px-4 pb-3 rounded-br-3xl rounded-bl-3xl z-20`}
                                    >
                                           {user && (
-                                          <div className='w-full flex flex-col'>
-                                                 <Link
-                                                        to={'/'}
-                                                        className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
-                                                        onClick={() => setToggleOpen(false)}
-                                                 >
-                                                        Home
-                                                 </Link>
-                                                 <Link
-                                                        to={'/my_trips'}
-                                                        className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
-                                                        onClick={() => setToggleOpen(false)}
-                                                 >
-                                                        My Trips
-                                                 </Link>
-                                                 <Link
-                                                        to={'/wallet'}
-                                                        className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
-                                                        onClick={() => setToggleOpen(false)}
-                                                 >
-                                                        Wallet
-                                                 </Link>
-                                                 <Link
-                                                        to={'/points'}
-                                                        className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
-                                                        onClick={() => setToggleOpen(false)}
-                                                 >
-                                                       Points
-                                                 </Link>
-                                          </div>
+                                                 <div className='w-full flex flex-col'>
+                                                        <Link
+                                                               to={'/'}
+                                                               className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
+                                                               onClick={() => setToggleOpen(false)}
+                                                        >
+                                                               Home
+                                                        </Link>
+                                                        <Link
+                                                               to={'/my_trips'}
+                                                               className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
+                                                               onClick={() => setToggleOpen(false)}
+                                                        >
+                                                               My Trips
+                                                        </Link>
+                                                        <Link
+                                                               to={'/wallet'}
+                                                               className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
+                                                               onClick={() => setToggleOpen(false)}
+                                                        >
+                                                               Wallet
+                                                        </Link>
+                                                        <Link
+                                                               to={'/points'}
+                                                               className='w-full text-xl font-TextFontMedium text-mainColor border-b-2 p-3 pb-1'
+                                                               onClick={() => setToggleOpen(false)}
+                                                        >
+                                                               Points
+                                                        </Link>
+                                                 </div>
                                           )}
                                           <div className='flex flex-col w-full items-center justify-center gap-y-2'>
                                                  {user ? (
