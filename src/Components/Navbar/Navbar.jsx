@@ -32,10 +32,10 @@ const Navbar = () => {
                                    <div className='sm:w-9/12 lg:w-3/12 flex items-center justify-start gap-x-2 z-10'>
                                           <Link to={'/'} className="flex items-center justify-start gap-x-2">
                                                  {/* <MainIcon/> */}
-                                                 <div className="w-32 h-14 rounded-full flex items-center justify-center">
+                                                 <div className="w-48 h-14 rounded-full flex items-center justify-center">
                                                         <img src={LogoImage} className='rounded-full object-cover w-full h-full' alt="Main Icon" />
                                                  </div> 
-                                                 <span className='text-3xl text-secoundColor font-TextFontRegular'>Ticket Hub</span>
+                                                 {/* <span className='text-3xl text-secoundColor font-TextFontRegular'>Ticket Hub</span> */}
                                           </Link>
                                    </div>
                                    {

@@ -197,7 +197,7 @@ const TravelBooking = () => {
                     All
                   </TabsTrigger>
                   <TabsTrigger value="hiace" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    Hiaces
+                    Mini Van
                   </TabsTrigger>
                   <TabsTrigger value="train" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
                     Trains
