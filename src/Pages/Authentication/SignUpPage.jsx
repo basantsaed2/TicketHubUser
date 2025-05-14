@@ -189,6 +189,7 @@ const SignUpPage = () => {
                         <SelectContent>
                             <SelectItem value="male">Male</SelectItem>
                             <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Prefer not to say</SelectItem>
                         </SelectContent>
                         </Select>
                     </div>
