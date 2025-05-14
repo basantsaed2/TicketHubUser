@@ -32,7 +32,7 @@ const TripDetailsPage = () => {
 
   return (
     <div className="bg-gradient-to-b from-orange-50 to-white min-h-screen text-gray-800">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 md:py-12">
         {/* Header with bus image - Stack on mobile, row on larger screens */}
         <div className="flex flex-col md:flex-row gap-6 sm:gap-8 mb-8 sm:mb-10">
           {trip.bus?.image_link && (

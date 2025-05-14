@@ -19,7 +19,7 @@ const Footer = () => {
           <div className="flex items-center gap-3 mb-5">
             <div className="w-32 h-14 rounded-full flex items-center justify-center">
               <img src={LogoImage} className='rounded-full object-cover w-full h-full' alt="Main Icon" />
-            </div>             <h1 className="text-2xl font-bold">Ticket Hub</h1>
+            </div>
           </div>
           <p className="text-base text-gray-700 leading-relaxed mb-5">
             Your Journey, Our Priority – Book with confidence and travel with ease.

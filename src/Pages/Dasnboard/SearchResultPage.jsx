@@ -441,7 +441,7 @@ export default function SearchResultPage() {
     const reviews = trip.reviewsCount ?? 86;
 
     return (
-      <div className="flex flex-col lg:flex-row bg-[#E8E8EA] md:h-[160px] h-[400px] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
+      <div className="flex flex-col lg:flex-row bg-[#E8E8EA] md:h-[160px] h-[500px] rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow">
         {/* image/icon */}
         <div className="relative w-full md:w-48 md:h-auto h-48  p-4">
           {trip.bus ? (

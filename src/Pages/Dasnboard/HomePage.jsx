@@ -30,8 +30,8 @@ const MapClickHandler = ({ onMapClick }) => {
 const TravelBooking = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { refetch: refetchBookingList, data: bookingListData } = useGet({ url: `https://bcknd.ticket-hub.net/user/booking/lists` });
-  const { postData: postGeneral ,loadingPost, response} = usePost({ url: `${apiUrl}/user/booking` });
-  const { postData: postPrivate ,loadingPost:loadingPrivate ,response:responsePrivate} = usePost({ url: `${apiUrl}/user/booking/private_request` });
+  const { postData: postGeneral, loadingPost, response } = usePost({ url: `${apiUrl}/user/booking` });
+  const { postData: postPrivate, loadingPost: loadingPrivate, response: responsePrivate } = usePost({ url: `${apiUrl}/user/booking/private_request` });
   const auth = useAuth();
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ const TravelBooking = () => {
   const [selectedCountry, setSelectedCountry] = useState("");
   const [selectedCar, setSelectedCar] = useState("");
 
-  const [modalVisible,setModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [selectedFromCity, setSelectedFromCity] = useState("");
   const [selectedToCity, setSelectedToCity] = useState("");
 
@@ -54,9 +54,9 @@ const TravelBooking = () => {
   const [travelers, setTravelers] = useState(1);
   const [tripType, setTripType] = useState("");
 
-  const minRoundDate = travelDate 
-  ? new Date(new Date(travelDate).setDate(new Date(travelDate).getDate() + 1)).toISOString().split("T")[0] 
-  : today;
+  const minRoundDate = travelDate
+    ? new Date(new Date(travelDate).setDate(new Date(travelDate).getDate() + 1)).toISOString().split("T")[0]
+    : today;
 
   // Main route type and filter mode
   const [routeType, setRouteType] = useState("all");
@@ -66,7 +66,7 @@ const TravelBooking = () => {
   // Private mode extra fields
   const [addressFrom, setAddressFrom] = useState("");
   const [addressTo, setAddressTo] = useState("");
-  
+
   const [mapLocationFrom, setMapLocationFrom] = useState([26.8206, 30.8025]); // Default: Egypt's center
   const [mapLocationTo, setMapLocationTo] = useState([26.8206, 30.8025]); // Default: Egypt's center
   const [showMapFrom, setShowMapFrom] = useState(false); // To toggle "From" map modal
@@ -84,81 +84,93 @@ const TravelBooking = () => {
     }
   }, [bookingListData]);
 
-    // Instead of auto-closing on click, we only update the marker:
-    const handleMapClickFrom = (e) => {
-      const { lat, lng } = e.latlng;
-      setMapLocationFrom([lat, lng]);
-    };
-  
-    const handleMapClickTo = (e) => {
-      const { lat, lng } = e.latlng;
-      setMapLocationTo([lat, lng]);
-    };
-  
+  // Instead of auto-closing on click, we only update the marker:
+  const handleMapClickFrom = (e) => {
+    const { lat, lng } = e.latlng;
+    setMapLocationFrom([lat, lng]);
+  };
+
+  const handleMapClickTo = (e) => {
+    const { lat, lng } = e.latlng;
+    setMapLocationTo([lat, lng]);
+  };
+
   const handleCloseModal = () => {
     setModalVisible(false);
     // Optionally, navigate or perform other actions after closing the modal
   };
-  
+
   useEffect(() => {
     if (response && !loadingPost) {
-          console.log('Response:', response.data);
-          console.log('service:', activeTab);
-          navigate('/trips', { state: { trips: response.data, service: activeTab, searchData: {  // Add the form data you want to pass
+      console.log('Response:', response.data);
+      console.log('service:', activeTab);
+      navigate('/trips', {
+        state: {
+          trips: response.data, service: activeTab, searchData: {  // Add the form data you want to pass
             from: selectedFromCity,
             to: selectedToCity,
             date: travelDate,
             roundDate: roundDate,
             travelers: travelers,
             tripType: roundDate ? "round_trip" : "one_way"
-          } } });
+          }
+        }
+      });
     }
-  }, [response]);  
-  
+  }, [response]);
+
   useEffect(() => {
     if (responsePrivate && !loadingPrivate) {
       setModalVisible(true)
     }
-  }, [responsePrivate]);  
- 
+  }, [responsePrivate]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-      const formData = {
-        // from: selectedFromCity,
-        // to: selectedToCity,
-        date: travelDate,
-        traveler: travelers,
-      };
+    if (!selectedFromCity) {
+      auth.toastError("Please Select Departure From");
+      return;
+    } if (!selectedToCity) {
+      auth.toastError("Please Select Arrival To");
+      return;
+    }
+    const formData = {
+      // from: selectedFromCity,
+      // to: selectedToCity,
+      date: travelDate,
+      traveler: travelers,
+    };
 
-      if (filterMode === "general") {
-        if (roundDate) {
-            formData.round_date = roundDate;
-            formData.type = "round_trip";
-        } else {
-            formData.type = "one_way";
-        }      
-        formData.from = selectedFromCity;
-        formData.to = selectedToCity;
-        postGeneral(formData);
-      } 
-      else if (filterMode === "private") {
-        if (!auth.user) {
-          auth.toastError('You must be logged in to continue.');
-          navigate('/auth/login', { replace: true });
-          return;
-        } 
-        formData.country_id = selectedCountry;
-        formData.city_id = selectedToCity;
-        formData.address = addressTo;
-        formData.from_address = addressFrom;
-        formData.map = `https://www.google.com/maps?q=${mapLocationTo[0].toFixed(4)},${mapLocationTo[1].toFixed(4)}`; // Google Maps link for "To"
-        formData.category_id = selectedCar;
-        formData.from_city_id = selectedFromCity;
-        formData.from_map = `https://www.google.com/maps?q=${mapLocationFrom[0].toFixed(4)},${mapLocationFrom[1].toFixed(4)}`; // Google Maps link for "From"
-        
-        postPrivate(formData);
-      }};
+    if (filterMode === "general") {
+      if (roundDate) {
+        formData.round_date = roundDate;
+        formData.type = "round_trip";
+      } else {
+        formData.type = "one_way";
+      }
+      formData.from = selectedFromCity;
+      formData.to = selectedToCity;
+      postGeneral(formData);
+    }
+    else if (filterMode === "private") {
+      if (!auth.user) {
+        auth.toastError('You must be logged in to continue.');
+        navigate('/auth/login', { replace: true });
+        return;
+      }
+      formData.country_id = selectedCountry;
+      formData.city_id = selectedToCity;
+      formData.address = addressTo;
+      formData.from_address = addressFrom;
+      formData.map = `https://www.google.com/maps?q=${mapLocationTo[0].toFixed(4)},${mapLocationTo[1].toFixed(4)}`; // Google Maps link for "To"
+      formData.category_id = selectedCar;
+      formData.from_city_id = selectedFromCity;
+      formData.from_map = `https://www.google.com/maps?q=${mapLocationFrom[0].toFixed(4)},${mapLocationFrom[1].toFixed(4)}`; // Google Maps link for "From"
+
+      postPrivate(formData);
+    }
+  };
 
   return (
     <div className="relative w-full h-screen lg:mb-10 xl:mb-5 mb-20">
@@ -189,54 +201,54 @@ const TravelBooking = () => {
             </div>
             {/* Main Tabs: All, Hivace, Trains, Bus */}
             {
-              filterMode==="general" && 
+              filterMode === "general" &&
               <div className="w-full md:w-2/4 mx-auto bg-white rounded-t-md border-b border-fifthColor">
-              <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid grid-cols-4 w-full p-0 text-black bg-white">
-                  <TabsTrigger value="all" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    All
-                  </TabsTrigger>
-                  <TabsTrigger value="hiace" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    Mini Van
-                  </TabsTrigger>
-                  <TabsTrigger value="train" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    Trains
-                  </TabsTrigger>
-                  <TabsTrigger value="bus" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
-                    Bus
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="all" />
-                <TabsContent value="hivace" />
-                <TabsContent value="trains" />
-                <TabsContent value="bus" />
-              </Tabs>
-            </div>
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                  <TabsList className="grid grid-cols-4 w-full p-0 text-black bg-white">
+                    <TabsTrigger value="all" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                      All
+                    </TabsTrigger>
+                    <TabsTrigger value="hiace" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                      Mini Van
+                    </TabsTrigger>
+                    <TabsTrigger value="train" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                      Trains
+                    </TabsTrigger>
+                    <TabsTrigger value="bus" className="w-full text-lg data-[state=active]:bg-mainColor data-[state=active]:text-white">
+                      Bus
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="all" />
+                  <TabsContent value="hivace" />
+                  <TabsContent value="trains" />
+                  <TabsContent value="bus" />
+                </Tabs>
+              </div>
             }
 
             {/* Form Section */}
             <div className="w-full md:p-4 p-2">
-            <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit}>
                 <div className={`grid grid-cols-2 lg:grid-cols-3 ${filterMode === "general" ? 'xl:grid-cols-5' : 'xl:grid-cols-5'} gap-2`}>
                   {/* Conditional Fields Based on Filter Mode */}
                   {filterMode === "private" && (
                     <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                    <label className="text-sm font-semibold mb-1">Country</label>
-                    <Select defaultValue={selectedCountry} onValueChange={setSelectedCountry}>
-                      <SelectTrigger className="border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
-                        <SelectValue placeholder="Select Country" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {countries.map((Country) => (
-                          <SelectItem key={Country.id}  value={String(Country.id)}>
-                            {Country.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                </div>
+                      <label className="text-sm font-semibold mb-1">Country</label>
+                      <Select defaultValue={selectedCountry} onValueChange={setSelectedCountry}>
+                        <SelectTrigger className="border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
+                          <SelectValue placeholder="Select Country" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countries.map((Country) => (
+                            <SelectItem key={Country.id} value={String(Country.id)}>
+                              {Country.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   )}
-                 
+
                   <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
                     <label className="text-sm font-semibold mb-1">Departure From</label>
                     <Select defaultValue={selectedFromCity} onValueChange={setSelectedFromCity} className="w-full">
@@ -284,16 +296,16 @@ const TravelBooking = () => {
 
                   {/* Round Date */}
                   {filterMode === "general" && (
-                  <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                    <label className="text-sm font-semibold mb-1">Return Date</label>
-                    <Input
-                      type="date"
-                      value={roundDate}
-                      min={minRoundDate}
-                      onChange={(e) => setRoundDate(e.target.value)}
-                      className="w-full border-b border-secoundColor px-3 py-2 text-black focus-visible:ring-0 focus-visible:border-secoundColor"
-                    />
-                  </div>
+                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
+                      <label className="text-sm font-semibold mb-1">Return Date</label>
+                      <Input
+                        type="date"
+                        value={roundDate}
+                        min={minRoundDate}
+                        onChange={(e) => setRoundDate(e.target.value)}
+                        className="w-full border-b border-secoundColor px-3 py-2 text-black focus-visible:ring-0 focus-visible:border-secoundColor"
+                      />
+                    </div>
                   )}
 
                   {/* Number of Travelers */}
@@ -310,79 +322,79 @@ const TravelBooking = () => {
 
                   {filterMode === "private" && (
                     <>
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">Car Category</label>
-                      <Select onValueChange={setSelectedCar}>
-                        <SelectTrigger className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
-                          <SelectValue placeholder="Select Car Category" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {cars.map((car) => (
-                            <SelectItem key={car.id} value={String(car.id)}>
-                              {car.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div> 
-                    
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">Address From</label>
-                      <Input
-                        type="text"
-                        value={addressFrom}
-                        onChange={(e) => setAddressFrom(e.target.value)}
-                        required
-                        placeholder="Enter address here"
-                        className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
-                      />
-                    </div>
-                    
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">Address To</label>
-                      <Input
-                        type="text"
-                        value={addressTo}
-                        onChange={(e) => setAddressTo(e.target.value)}
-                        required
-                        placeholder="Enter address here"
-                        className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
-                      />
-                    </div>
+                      <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
+                        <label className="text-sm font-semibold mb-1">Car Category</label>
+                        <Select onValueChange={setSelectedCar}>
+                          <SelectTrigger className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor">
+                            <SelectValue placeholder="Select Car Category" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cars.map((car) => (
+                              <SelectItem key={car.id} value={String(car.id)}>
+                                {car.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-                    {/* --- From Location Input --- */}
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
-                      <label className="text-sm font-semibold mb-1">PickUp Location (From)</label>
-                      <Input
-                        type="text"
-                        value={
-                          mapLocationFrom[0] !== 0 && mapLocationFrom[1] !== 0
-                            ? `https://www.google.com/maps?q=${mapLocationFrom[0].toFixed(4)},${mapLocationFrom[1].toFixed(4)}`
-                            : ""
-                        }
-                        placeholder="Click to select on map"
-                        onFocus={() => setShowMapFrom(true)}
-                        readOnly
-                        className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
-                      />
-                    </div>
+                      <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
+                        <label className="text-sm font-semibold mb-1">Address From</label>
+                        <Input
+                          type="text"
+                          value={addressFrom}
+                          onChange={(e) => setAddressFrom(e.target.value)}
+                          required
+                          placeholder="Enter address here"
+                          className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
+                        />
+                      </div>
 
-                    {/* --- To Location Input --- */}
-                    <div className="flex flex-col bg-fifthColor p-2 rounded-lg ">
-                      <label className="text-sm font-semibold mb-1">Drop Location (To)</label>
-                      <Input
-                        type="text"
-                        value={
-                          mapLocationTo[0] !== 0 && mapLocationTo[1] !== 0
-                            ? `https://www.google.com/maps?q=${mapLocationTo[0].toFixed(4)},${mapLocationTo[1].toFixed(4)}`
-                            : ""
-                        }
-                        placeholder="Click to select on map"
-                        onFocus={() => setShowMapTo(true)}
-                        readOnly
-                        className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
-                      />
-                    </div>
+                      <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
+                        <label className="text-sm font-semibold mb-1">Address To</label>
+                        <Input
+                          type="text"
+                          value={addressTo}
+                          onChange={(e) => setAddressTo(e.target.value)}
+                          required
+                          placeholder="Enter address here"
+                          className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
+                        />
+                      </div>
+
+                      {/* --- From Location Input --- */}
+                      <div className="flex flex-col bg-fifthColor p-2 rounded-lg">
+                        <label className="text-sm font-semibold mb-1">PickUp Location (From)</label>
+                        <Input
+                          type="text"
+                          value={
+                            mapLocationFrom[0] !== 0 && mapLocationFrom[1] !== 0
+                              ? `https://www.google.com/maps?q=${mapLocationFrom[0].toFixed(4)},${mapLocationFrom[1].toFixed(4)}`
+                              : ""
+                          }
+                          placeholder="Click to select on map"
+                          onFocus={() => setShowMapFrom(true)}
+                          readOnly
+                          className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
+                        />
+                      </div>
+
+                      {/* --- To Location Input --- */}
+                      <div className="flex flex-col bg-fifthColor p-2 rounded-lg ">
+                        <label className="text-sm font-semibold mb-1">Drop Location (To)</label>
+                        <Input
+                          type="text"
+                          value={
+                            mapLocationTo[0] !== 0 && mapLocationTo[1] !== 0
+                              ? `https://www.google.com/maps?q=${mapLocationTo[0].toFixed(4)},${mapLocationTo[1].toFixed(4)}`
+                              : ""
+                          }
+                          placeholder="Click to select on map"
+                          onFocus={() => setShowMapTo(true)}
+                          readOnly
+                          className="w-full border-b border-secoundColor px-3 py-2 text-black focus:ring-0 focus:border-secoundColor"
+                        />
+                      </div>
                     </>
                   )}
                 </div>
@@ -404,35 +416,35 @@ const TravelBooking = () => {
 
       {/* --- Modal for "From" Location --- */}
       {showMapFrom && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-            <div className="bg-white rounded-lg shadow-lg w-[90%] h-[60vh] flex flex-col">
-              {/* Header */}
-              <div className="flex justify-between items-center px-4 py-3 border-b">
-                <h3 className="text-lg font-semibold">Select PickUp Location</h3>
-              </div>
-              {/* Map Container */}
-              <div className="flex-grow relative">
-                <MapContainer
-                  center={mapLocationFrom}
-                  zoom={6}
-                  className="w-full h-full"
-                >
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  <Marker position={mapLocationFrom} />
-                  <MapClickHandler onMapClick={handleMapClickFrom} />
-                </MapContainer>
-              </div>
-              {/* Footer */}
-              <div className="px-4 py-3 border-t flex justify-end">
-                <button
-                  onClick={() => setShowMapFrom(false)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Done
-                </button>
-              </div>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white rounded-lg shadow-lg w-[90%] h-[60vh] flex flex-col">
+            {/* Header */}
+            <div className="flex justify-between items-center px-4 py-3 border-b">
+              <h3 className="text-lg font-semibold">Select PickUp Location</h3>
+            </div>
+            {/* Map Container */}
+            <div className="flex-grow relative">
+              <MapContainer
+                center={mapLocationFrom}
+                zoom={6}
+                className="w-full h-full"
+              >
+                <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                <Marker position={mapLocationFrom} />
+                <MapClickHandler onMapClick={handleMapClickFrom} />
+              </MapContainer>
+            </div>
+            {/* Footer */}
+            <div className="px-4 py-3 border-t flex justify-end">
+              <button
+                onClick={() => setShowMapFrom(false)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              >
+                Done
+              </button>
             </div>
           </div>
+        </div>
       )}
 
       {/* --- Modal for "To" Location --- */}
@@ -472,19 +484,19 @@ const TravelBooking = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity duration-300">
           <div className="relative bg-white rounded-xl p-8 shadow-2xl max-w-md w-full text-center">
             {/* Close Button */}
-            <button 
-              onClick={handleCloseModal} 
+            <button
+              onClick={handleCloseModal}
               className="absolute top-2 right-2 btn btn-sm btn-ghost"
             >
               ✕
             </button>
             {/* Success Icon */}
             <div className="mb-4">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                className="mx-auto h-12 w-12 text-mainColor" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="mx-auto h-12 w-12 text-mainColor"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -497,12 +509,12 @@ const TravelBooking = () => {
               Your request is under review. We will contact you soon!
             </p>
             <div className='w-full flex justify-center items-center'>
-            <button 
-              onClick={handleCloseModal} 
-              className="btn btn-primary px-4 py-2 rounded-lg bg-mainColor hover:bg-secoundColor text-white"
-            >
-              Close
-            </button>
+              <button
+                onClick={handleCloseModal}
+                className="btn btn-primary px-4 py-2 rounded-lg bg-mainColor hover:bg-secoundColor text-white"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>

@@ -4,13 +4,13 @@ import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { usePost } from "../../Hooks/usePostJson";
 import { useGet } from "../../Hooks/useGet";
-import { FaWallet, FaCreditCard, FaPaypal, FaChair, FaUserAlt, FaBus } from "react-icons/fa";
+import { FaWallet, FaCreditCard, FaPaypal, FaChair, FaUserAlt, FaBus, FaCheckCircle } from "react-icons/fa";
 import { IoMdClose, IoIosArrowForward } from "react-icons/io";
 import { useAuth } from '../../Context/Auth';
 
 const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
   const isSeatAvailable = (seatNumber) => {
-    return trip.bus?.new_areas?.[seatNumber] === true;
+    return trip.bus?.new_areas?.[seatNumber] === false;
   };
 
   const toggleSeatSelection = (seatNumber) => {
@@ -23,18 +23,22 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
     }
   };
 
-  const renderBusLayout = () => {
+  const renderHiaceLayout = () => {
     const seatLayout = [
       // Row 0: Driver + seat 1
       [
         { type: 'driver' },
-        { number: 1 }
+        null,
+        { number: 1 },
+        null,
       ],
       // Row 1: 2, 3, 4
       [
         { number: 2 },
         { number: 3 },
-        { number: 4 }
+        { number: 4 },
+        null,
+
       ],
       // Row 2: 5, 6 (left), 7 (right)
       [
@@ -58,11 +62,11 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
         { number: 14 }
       ]
     ];
-  
+
     return (
       <div className="relative bg-gray-50 p-4 rounded-xl border border-gray-200">
         <h3 className="text-center mb-4 font-medium text-gray-700">Select An Available Seat</h3>
-  
+
         <div className="flex flex-col gap-4">
           {seatLayout.map((row, rowIndex) => (
             <div key={`row-${rowIndex}`} className="flex justify-center gap-4">
@@ -70,7 +74,7 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
                 if (!seat) {
                   return <div key={`empty-${seatIndex}`} className="w-12 h-12" />;
                 }
-  
+
                 if (seat.type === 'driver') {
                   return (
                     <div key="driver" className="w-12 h-12 flex items-center justify-center bg-black text-white rounded">
@@ -78,11 +82,11 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
                     </div>
                   );
                 }
-  
+
                 const seatNumber = seat.number;
                 const isAvailable = isSeatAvailable(seatNumber);
                 const isSelected = selectedSeats.includes(seatNumber);
-  
+
                 return (
                   <button
                     key={`seat-${seatNumber}`}
@@ -114,7 +118,113 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
         </div>
       </div>
     );
-  };  
+  };
+
+  const renderBusLayout = () => {
+    const seatRows = [];
+    let seatNumber = 1;
+
+    // First row with driver seat
+    seatRows.push([
+      { type: 'driver' },
+      null,
+      null,
+      null,
+      null
+    ]);
+
+    // Middle rows: seats 3 to 44 (4 per row with a null between seat 2 and 3 visually)
+    while (seatNumber <= 44) {
+      const row = [];
+
+      // Left seats
+      for (let i = 0; i < 2 && seatNumber <= 44; i++) {
+        row.push({ number: seatNumber++ });
+      }
+
+      // Add space between left and right
+      row.push(null);
+
+      // Right seats
+      for (let i = 0; i < 2 && seatNumber <= 44; i++) {
+        row.push({ number: seatNumber++ });
+      }
+
+      seatRows.push(row);
+    }
+
+    // Last row: 5 special seats (45 to 49) with bottom driver seat
+    const lastRow = [
+      { number: seatNumber++ },
+      { number: seatNumber++ },
+      { number: seatNumber++ },
+      { number: seatNumber++ },
+      { number: seatNumber++ },
+    ];
+    seatRows.push(lastRow);
+
+    return (
+      <div className="relative bg-gray-50 p-4 rounded-xl border border-gray-200">
+        <h3 className="text-center mb-4 font-medium text-gray-700">Select An Available Seat</h3>
+
+        <div className="flex flex-col gap-4">
+          {seatRows.map((row, rowIndex) => (
+            <div key={`row-${rowIndex}`} className="flex justify-center gap-4">
+              {row.map((seat, seatIndex) => {
+                if (!seat) {
+                  return <div key={`empty-${rowIndex}-${seatIndex}`} className="w-12 h-12" />;
+                }
+
+                if (seat.type === 'driver') {
+                  return (
+                    <div
+                      key={`driver-${rowIndex}-${seatIndex}`}
+                      className="w-12 h-12 flex items-center justify-center bg-black text-white rounded font-bold"
+                    >
+                      D
+                    </div>
+                  );
+                }
+
+                const seatNumber = seat.number;
+                const isAvailable = isSeatAvailable(seatNumber);
+                const isSelected = selectedSeats.includes(seatNumber);
+
+                return (
+                  <button
+                    key={`seat-${seatNumber}`}
+                    type="button"
+                    onClick={() => toggleSeatSelection(seatNumber)}
+                    disabled={!isAvailable}
+                    className={`w-12 h-12 flex items-center justify-center rounded-md border-2 relative transition-all
+                    ${isSelected
+                        ? 'bg-orange-500 border-orange-600 text-white shadow-md'
+                        : isAvailable
+                          ? 'bg-white border-gray-300 hover:border-orange-400'
+                          : 'bg-gray-200 border-gray-300 cursor-not-allowed'
+                      }`}
+                  >
+                    {isAvailable ? (
+                      <>
+                        <span className="font-medium">{seatNumber}</span>
+                        {isSelected && (
+                          <div className="absolute -top-1 -right-1 bg-green-500 text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
+                            ✓
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <IoMdClose className="text-gray-400" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="bg-white rounded-xl shadow-lg p-6 mb-6 border border-gray-200">
@@ -125,7 +235,15 @@ const SeatSelection = ({ trip, travelers, onSeatsSelected, selectedSeats }) => {
         </div>
       </div>
 
-      {renderBusLayout()}
+
+      {
+        trip.trip_type === "MiniVan" &&
+        renderHiaceLayout()
+      }
+      {
+        trip.trip_type === "bus" &&
+        renderBusLayout()
+      }
 
       <div className="flex flex-wrap justify-center gap-8 mt-8">
         <div className="flex items-center gap-2">
@@ -186,7 +304,10 @@ const TravelerInfoCard = ({ index, traveler, onChange, seatNumber }) => {
     </div>
   );
 };
-const PaymentMethodCard = ({ method, selected, onChange }) => {
+
+
+
+const PaymentMethodCard = ({ method, selected, onChange,receiptImage, onReceiptChange }) => {
   return (
     <div
       onClick={() => onChange(method.id)}
@@ -207,6 +328,33 @@ const PaymentMethodCard = ({ method, selected, onChange }) => {
           <IoIosArrowForward className={`text-xl ${selected ? "text-orange-500" : "text-gray-400"}`} />
         </div>
       </div>
+
+      {method.name && String(method.name).toLowerCase().includes('vodafone') && (
+        <div className="mt-6">
+          <label className="block text-gray-700 font-medium mb-3">Receipt Image (Required for Vodafone Cash)</label>
+          <div className="flex items-center gap-4">
+            <label className="cursor-pointer">
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition">
+                <span className="text-gray-600">Click to upload payment receipt</span>
+                <input
+                  type="file"
+                  onChange={onReceiptChange}
+                  className="hidden"
+                  accept="image/*"
+                  required
+                />
+              </div>
+            </label>
+            {receiptImage && (
+              <div className="flex items-center">
+                <span className="text-sm text-gray-600 mr-2">{receiptImage.name}</span>
+                <FaCheckCircle className="text-green-500" />
+              </div>
+            )}
+          </div>
+          <p className="text-xs text-gray-500 mt-2">Please upload a clear image of your Vodafone Cash payment receipt</p>
+        </div>
+      )}
     </div>
   );
 };
@@ -226,11 +374,16 @@ const CheckoutPage = () => {
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
   const [travelDate] = useState(trip ? trip.date : "");
-  const [receiptImage, setReceiptImage] = useState(null);
+  // const [receiptImage, setReceiptImage] = useState(null);
   const [travelers, setTravelers] = useState(1);
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [travelerDetails, setTravelerDetails] = useState([{ name: "", age: "" }]);
   const [modalVisible, setModalVisible] = useState(false);
+   const [receiptImage, setReceiptImage] = useState(null);
+
+  const handleReceiptChange = (e) => {
+    setReceiptImage(e.target.files[0]);
+  };
 
   useEffect(() => {
     refetchBookingList();
@@ -291,9 +444,6 @@ const CheckoutPage = () => {
     setTravelerDetails(updated);
   };
 
-  const handleReceiptChange = (e) => {
-    setReceiptImage(e.target.files[0]);
-  };
 
   const handlePaymentSubmit = async (e) => {
     e.preventDefault();
@@ -383,7 +533,7 @@ const CheckoutPage = () => {
                     <p className="text-gray-600">{trip.pickup_station?.name} → {trip.dropoff_station?.name}</p>
                   </div>
                   <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {trip.trip_type === 'bus' ? 'Bus' : 'Hiace'}
+                    {trip.trip_type === 'bus' ? 'Bus' : 'Mini Van'}
                   </div>
                 </div>
 
@@ -464,37 +614,11 @@ const CheckoutPage = () => {
                     method={method}
                     selected={selectedPaymentMethod === method.id}
                     onChange={setSelectedPaymentMethod}
+                    receiptImage={receiptImage}
+                    onReceiptChange={handleReceiptChange}
                   />
                 ))}
               </div>
-
-              {/* Vodafone Receipt Upload - Only shown when Vodafone is selected */}
-              {selectedPaymentMethod && String(selectedPaymentMethod).toLowerCase().includes('vodafone') && (
-                <div className="mt-6">
-                  <label className="block text-gray-700 font-medium mb-3">Receipt Image (Required for Vodafone Cash)</label>
-                  <div className="flex items-center gap-4">
-                    <label className="cursor-pointer">
-                      <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-orange-400 transition">
-                        <span className="text-gray-600">Click to upload payment receipt</span>
-                        <input
-                          type="file"
-                          onChange={handleReceiptChange}
-                          className="hidden"
-                          accept="image/*"
-                          required
-                        />
-                      </div>
-                    </label>
-                    {receiptImage && (
-                      <div className="flex items-center">
-                        <span className="text-sm text-gray-600 mr-2">{receiptImage.name}</span>
-                        <FaCheckCircle className="text-green-500" />
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">Please upload a clear image of your Vodafone Cash payment receipt</p>
-                </div>
-              )}
 
               <div className="mt-8">
                 <Button
