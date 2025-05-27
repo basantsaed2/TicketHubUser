@@ -2,7 +2,7 @@ import React from 'react'
 import LogoImage from '../Assets/Images/Logo.png'
 const Suppert = () => {
     return (
-        <div className="container mx-auto mt-8 p-6 bg-white shadow-md rounded-md">
+        <div className="container mt-8 p-6 bg-white shadow-md rounded-md">
             <h2 className="text-2xl font-semibold mb-4 text-one">Contact Support</h2>
             <p className="mb-4 text-gray-700">
                 We're here to help! If you have any questions or need assistance, please reach out to us through the following methods:
@@ -31,15 +31,15 @@ const Suppert = () => {
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold mb-2 text-gray-700">Delete Account Support </h3>
+                <h3 className="text-lg font-semibold text-gray-700">Delete Account Support </h3>
 
             </div>
 
             <div className="mb-6 text-one">
                 To delete your account please contact us on Support@ticjet-hub.net
             </div>
-            <div>
-                <img src={LogoImage} alt="Voo Logo" className="w-100 h-100 mx-auto mb-4" />
+            <div className='w-full h-[800px]'>
+                <img src={LogoImage} alt="Voo Logo" className="w-full h-full" />
             </div>
         </div>
     );

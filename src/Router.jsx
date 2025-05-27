@@ -5,6 +5,7 @@ import LoginPage from "./Pages/Authentication/LoginPage";
 import SignUpPage from "./Pages/Authentication/SignUpPage";
 import { CheckoutPage, HomePage, SearchResultPage, ProfilePage, WalletPage, PointsPage, MyTripsPage, TripDetailsPage } from "./Pages/allPages";
 import Suppert from "./Pages/Support";
+import PrivacyPolicy from "./Pages/PrivacyPolicy";
 
 export const router = createBrowserRouter(
   [
@@ -30,6 +31,10 @@ export const router = createBrowserRouter(
         {
           path: "support",
           element: <Suppert />,
+        },
+        {
+          path: "privacy_policy",
+          element: <PrivacyPolicy />,
         },
 
         {

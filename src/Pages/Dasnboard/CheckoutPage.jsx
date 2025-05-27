@@ -307,7 +307,7 @@ const TravelerInfoCard = ({ index, traveler, onChange, seatNumber }) => {
 
 
 
-const PaymentMethodCard = ({ method, selected, onChange,receiptImage, onReceiptChange }) => {
+const PaymentMethodCard = ({ method, selected, onChange, receiptImage, onReceiptChange }) => {
   return (
     <div
       onClick={() => onChange(method.id)}
@@ -379,7 +379,7 @@ const CheckoutPage = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const [travelerDetails, setTravelerDetails] = useState([{ name: "", age: "" }]);
   const [modalVisible, setModalVisible] = useState(false);
-   const [receiptImage, setReceiptImage] = useState(null);
+  const [receiptImage, setReceiptImage] = useState(null);
 
   const handleReceiptChange = (e) => {
     setReceiptImage(e.target.files[0]);
@@ -567,12 +567,15 @@ const CheckoutPage = () => {
             </div>
 
             {/* Seat selection */}
-            <SeatSelection
-              trip={trip}
-              travelers={travelers}
-              onSeatsSelected={setSelectedSeats}
-              selectedSeats={selectedSeats}
-            />
+            {
+              (trip.trip_type === "bus" || trip.trip_type === "MiniVan") &&
+              <SeatSelection
+                trip={trip}
+                travelers={travelers}
+                onSeatsSelected={setSelectedSeats}
+                selectedSeats={selectedSeats}
+              />
+            }
 
             {/* Traveler information */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
